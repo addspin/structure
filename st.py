@@ -5,12 +5,14 @@ from flask import Flask, render_template, url_for, request, jsonify, session, fl
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'some random string'
 
-@app.route('/')
-def index():
-    return render_template('index.html', side_pos='active')
+@app.route('/', methods=['GET', 'POST'])
+def search():
+    return render_template('search.html', side_pos='active')
 
 
-
+@app.route('/card_user', methods=['GET', 'POST'])
+def card_user():
+    return render_template('card_user.html', side_pos='active')
 
 
 
