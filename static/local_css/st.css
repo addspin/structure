@@ -4,7 +4,7 @@
     background: rgba(243, 243, 248, 0.31);
     display: flex;
     justify-content: center;
-    
+
 }
 
 .lvl1 {
@@ -27,6 +27,7 @@
     width: 1158px;
     height: 198px;
     flex-shrink: 0;
+    display: table;
     border-radius: 5px;
     background: #FFF;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);

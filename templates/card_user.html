@@ -5,8 +5,44 @@
 
 {%block card_user_form%}
 
-<div class="search">
-
+<div class="search ">
+    <form class="needs-validation " action="" method="POST" novalidate>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Управление:</span>
+            <select class="form-select" id="inputGroupSelect01" required>
+            <option selected>Выберите управление</option>
+            <option value="1">One</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Отдел:</span>
+            <select class="form-select" id="inputGroupSelect01">
+            <option selected>Выберите отдел</option>
+            <option value="1">One</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Должность:</span>
+            <select class="form-select" id="inputGroupSelect01">
+            <option selected>Выберите должность</option>
+            <option value="1">One</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
+            <select class="form-select" id="inputGroupSelect01">
+            <option selected>Выберите Ф.И.О</option>
+            <option value="1">One</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Примечение:</label>
+            <textarea class="form-control" id="device_text"  name="device_text" rows="3" placeholder="Любая дополнительная информация" required></textarea>
+        </div>
+        <div class="input-group mb-3">
+            <input  class="btn btn-warning" type="submit" value="Добавить объект" >
+        </div>
+    </form>
 </div>
 
 {%endblock%}

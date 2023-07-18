@@ -15,6 +15,13 @@ def card_user():
     return render_template('card_user.html', side_pos='active')
 
 
+@app.route('/data', methods=['GET', 'POST'])
+def data():
+    return render_template('data.html', side_pos='active')
+
+@app.route('/export', methods=['GET', 'POST'])
+def export():
+    return render_template('export.html', side_pos='active')
 
 
 if __name__ == '__main__':
