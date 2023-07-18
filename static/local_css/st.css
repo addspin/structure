@@ -1,6 +1,6 @@
 .lvl0 {
-    width: 1920px;
-    height: 1080px;
+    width: auto;
+    height: 100vh;
     background: rgba(243, 243, 248, 0.31);
     display: flex;
     justify-content: center;
@@ -8,8 +8,8 @@
 }
 
 .lvl1 {
-    width: 1239px;
-    height: 1080px;
+    width: auto;
+    height: auto;
     flex-shrink: 0;
     background: #F3F3F8;
 }
