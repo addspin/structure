@@ -6,32 +6,35 @@
 {%block card_user_form%}
 
 <div class="search ">
-    <form class="needs-validation " action="" method="POST" novalidate>
+    <div class="mb-2">
+        <b><label for="exampleFormControlTextarea1" class="form-label">Заполните карточку нового пользователя:</label></b>
+    </div>
+    <form class="needs-validation" action="" method="POST" novalidate>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
             <select class="form-select" id="inputGroupSelect01" required>
-            <option selected>Выберите управление</option>
+            <option selected></option>
             <option value="1">One</option>
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Отдел:</span>
-            <select class="form-select" id="inputGroupSelect01">
-            <option selected>Выберите отдел</option>
+            <select class="form-select" id="inputGroupSelect01" required>
+            <option selected></option>
             <option value="1">One</option>
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Должность:</span>
-            <select class="form-select" id="inputGroupSelect01">
-            <option selected>Выберите должность</option>
+            <select class="form-select" id="inputGroupSelect01" required>
+            <option selected></option>
             <option value="1">One</option>
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-            <select class="form-select" id="inputGroupSelect01">
-            <option selected>Выберите Ф.И.О</option>
+            <select class="form-select" id="inputGroupSelect01" required>
+            <option selected></option>
             <option value="1">One</option>
             </select>
         </div>

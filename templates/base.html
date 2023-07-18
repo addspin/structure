@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/local_css/st.css') }}">
     <script src="{{ url_for('static', filename='/js/htmx.min.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='/js/jquery-3.7.0.min.js') }}"></script> -->
 
 
 
@@ -32,6 +33,37 @@
             {%block export_form%}{%endblock%}
         </div>
     </div>
+
+
+
+
+
+
+
+
+<!-- valid form value -->
+<script>
+    (function () {
+      'use strict'
+    
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.querySelectorAll('.needs-validation')
+    
+      // Loop over them and prevent submission
+      Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+    
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
+    
+</script>
 
 </main>
 </body>
