@@ -6,11 +6,24 @@
 {%block search_form%}
 
 
-<div class="search">
-    <input type="text" placeholder="Управелние">
-    <input type="text" placeholder="Отдел">
-    <input type="text" placeholder="Поиск пользователя">
-    <input type="button" value="Найти">
+<div class="search ">
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">Управление:</label>
+        <select class="form-select" id="inputGroupSelect01">
+          <option selected>Выберите Управление</option>
+          <option value="1">One</option>
+        </select>
+      </div>
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">Отдел:</label>
+        <select class="form-select" id="inputGroupSelect01">
+          <option selected>Выберите Отдел</option>
+          <option value="1">One</option>
+        </select>
+      </div>
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
 </div>
 
 {%endblock%}

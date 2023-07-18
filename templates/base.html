@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Base</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/local_css/st.css') }}">
+    <script src="{{ url_for('static', filename='/js/htmx.min.js') }}"></script>
+
 
 
 </head>
 <body>
-<main>
+<main id="main">
     <div class="lvl0">
         <div class="lvl1">
             <div class="menu">
                 <header class="d-flex py-2">
                 <ul class="nav nav-pills">
-                    <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Поиск</a></li>
-                    <li class="nav-item"><a href="/card_user" class="nav-link">Карточка пользователя</a></li>
-                    <li class="nav-item"><a href="/data" class="nav-link">Данные</a></li>
-                    <li class="nav-item"><a href="/export" class="nav-link">Экспорт</a></li>
+                    <li class="nav-item"><a href="" hx-get="/" hx-target="#main" hx-trigger="mouseenter once" hx-swap="innerHTML" class="nav-link {%block search%}{%endblock%}" aria-current="page">Поиск</a></li>
+                    <li class="nav-item"><a href="" hx-get="/card_user" hx-target="#main" hx-trigger="mouseenter once" hx-swap="innerHTML" class="nav-link {%block card%}{%endblock%}">Карточка пользователя</a></li>
+                    <li class="nav-item"><a href="" hx-get="/data" hx-target="#main" hx-trigger="mouseenter once" hx-swap="innerHTML" class="nav-link {%block data%}{%endblock%}">Данные</a></li>
+                    <li class="nav-item"><a href="" hx-get="/export" hx-target="#main" hx-trigger="mouseenter once" hx-swap="innerHTML" class="nav-link {%block export%}{%endblock%}">Экспорт</a></li>
                 </ul>
                 </header>
             </div>
+            {%block search_form%}{%endblock%}
+            {%block card_user_form%}{%endblock%}
+            {%block data_form%}{%endblock%}
+            {%block export_form%}{%endblock%}
         </div>
     </div>
-
-    {%block card_user_form%}{%endblock%} 
-    {%block data_form%}{%endblock%}
-    {%block search_form%}{%endblock%}
 
 </main>
 </body>
