@@ -9,7 +9,7 @@
     <form class="" hx-post="/data" hx-target="#main">
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <input class="form-control" list="datalistOptions" id="management" name="management" placeholder="Название управления" >
+            <input class="form-control" list="datalistOptions" id="management" name="management" placeholder="Название управления или другой корневой структурной единицы" >
             <datalist id="datalistOptions" >
                 {% for value in extract_management_data %}
                 <option value="{{value.management_name}}">
@@ -36,9 +36,12 @@
             </datalist>
         </div>
         <div class="input-group mb-3">
-            <input  class="btn btn-warning" type="submit" value="Добавить"5>
+            <input  class="btn btn-warning" type="submit" value="Добавить">
         </div>
     </form>
+    <div class="input-group mb-3">
+        <a class="button-alert" href="" hx-get="/card_user" hx-target="#main"></a>
+    </div>
     <div class="message_data">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
