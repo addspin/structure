@@ -37,6 +37,9 @@
     padding: 20px;
 }
 
+.message_data {
+    display: flex;
+}
 
 .um_form_service {
     padding: 10px; 

@@ -6,36 +6,61 @@
 {%block data_form%}
 
 <div class="search">
-    <form class="needs-validation" action="" method="POST" novalidate>
+    <form class="" hx-post="/data" hx-target="#main">
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <input class="form-control" list="datalistOptions" id="device_type_name" name="device_type_name" placeholder="Название управления" required>
+            <input class="form-control" list="datalistOptions" id="management" name="management" placeholder="Название управления" >
             <datalist id="datalistOptions" >
-                <option value="1">
-                <option value="2">
+                {% for value in extract_management_data %}
+                <option value="{{value.management_name}}">
+                {% endfor %}
             </datalist>
+                
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Отдел:</span>
-            <input class="form-control" list="datalistOptions" id="device_type_name" name="device_type_name" placeholder="Название отдела" required>
-            <datalist id="datalistOptions">
-                <option value="1">
-                <option value="2">
+            <input class="form-control" list="datalistOptions1" id="department" name="department" placeholder="Название отдела" >
+            <datalist id="datalistOptions1">
+                {% for value in extract_department_data %}
+                <option value="{{value.department_name}}">
+                {% endfor %}
             </datalist>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Должность:</span>
-            <input class="form-control" list="datalistOptions" id="device_type_name" name="device_type_name" placeholder="Название должности" required>
-            <datalist id="datalistOptions">
-                <option value="1">
-                <option value="2">
-                </option>
+            <input class="form-control" list="datalistOptions2" id="job" name="job" placeholder="Название должности" >
+            <datalist id="datalistOptions2">
+                {% for value in extract_job_data %}
+                <option value="{{value.job_name}}">
+                {% endfor %}
             </datalist>
         </div>
         <div class="input-group mb-3">
-            <input  class="btn btn-warning" type="submit" value="Добавить" >
+            <input  class="btn btn-warning" type="submit" value="Добавить"5>
         </div>
     </form>
+    <div class="message_data">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                {% if category == 'management-info' %}
+                    {% set alert_class = 'alert-success' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                        <strong>{{ message }}</strong> - запись добавлена!
+                    </div>
+                {% elif category == 'department-info' %}
+                    {% set alert_class = 'alert-success' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                        <strong>{{ message }}</strong> - запись добавлена!
+                    </div>
+                {% elif category == 'job-info' %}
+                    {% set alert_class = 'alert-success' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                        <strong>{{ message }}</strong> - запись добавлена!
+                    </div>   
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+    </div>
 </div>
 
 

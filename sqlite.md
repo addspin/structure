@@ -53,7 +53,7 @@ DROP TABLE device;
 DROP TABLE object_data;
 DROP TABLE service_data;
 DROP TABLE user_data;
-DROP TABLE domain;
+DROP TABLE management;
 
 
 ```
