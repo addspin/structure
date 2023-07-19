@@ -17,16 +17,15 @@ def card_user():
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
-    # extract_data = False
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     if request.method == 'POST':
+        form = request.form
+        add_data_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
-        form = request.form
-        add_data_fn(form)
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
