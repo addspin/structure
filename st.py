@@ -17,6 +17,7 @@ def card_user():
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
+    create_table_data_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
@@ -29,15 +30,21 @@ def data():
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
+def create_table_data_fn():
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS management (management_name varchar(300) PRIMARY KEY)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS department (department_name varchar(300) PRIMARY KEY)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS job (job_name varchar(300) PRIMARY KEY)")
+    conn.commit()
+    conn.close()
+
 def add_data_fn(form):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS management (management_name varchar(300) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS department (department_name varchar(300) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS job (job_name varchar(300) PRIMARY KEY)")
     if management != '':
         cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
         flash (f'{management} ', 'management-info')
@@ -75,6 +82,31 @@ def extract_job_fn():
         conn.close()
         return job
 
+@app.route('/remove_data', methods=['GET', 'POST'])
+def remove_data():
+    if request.method == 'POST':
+        form = request.form
+        remove_data_fn(form)
+    # return redirect(url_for('data'))
+
+def remove_data_fn(form):
+    management = request.form['management']
+    department = request.form['department']
+    job = request.form['job']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    if management is not None:
+        print(management)
+        cursor.execute("DELETE FROM management WHERE management_name = ?", (management,))
+    # if department is not None:
+    #     cursor.execute("DELETE FROM department WHERE department_name = ?", (department,))
+    # if job is not None:
+    #     cursor.execute("DELETE FROM job WHERE job_name = ?", (job,))
+    # cursor.execute("DELETE FROM management")
+    # cursor.execute("DELETE FROM department")
+    # cursor.execute("DELETE FROM job")
+    conn.commit()
+    conn.close()
 
 @app.route('/export', methods=['GET', 'POST'])
 def export():

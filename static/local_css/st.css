@@ -40,24 +40,29 @@
 .message_data {
     display: flex;
 }
-a.button-alert {
-    background-color: #196BCA;
+a.button-alert{
+    background-color: #eb3838;
     color: #fff;
-    font-family: Trebuchet MS;
-    font-size: 18px;
+    /* font-family: Trebuchet MS; */
+    font-size: 17px;
     font-weight: 400;
     font-style: normal;
     text-decoration: none;
-    padding: 14px 15px;
-    border: 0px solid #000;
-    border-radius: 10px;
+    padding: 7px 19px;
+    border: 0px solid #000000;
+    border-radius: 7px;
     display: inline-block;
-}
-a.button-alert:hover{
-    background-color: #5482d0;
-}
-a.button-alert:active{
+   }
+   a.button-alert:hover{
+    background-color: #df3535;
+   }
+   a.button-alert:active{
     transform: scale(0.95);
+   }
+
+.button_line {
+    display: flex;
+    justify-content: space-between;
 }
 
 .um_form_service {
