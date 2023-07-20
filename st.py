@@ -13,19 +13,42 @@ def search():
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
+    create_table_card_user_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
+    if request.method == 'POST':
+         form = request.form
+         add_card_user_fn(form)
     return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+
+def add_card_user_fn(form):
+    management = request.form['management']
+    department = request.form['department']
+    job = request.form['job']
+    user = request.form['user']
+    user_card_text = request.form['user_card_text']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
+    result = cursor.fetchone()
+    if result is None:
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text) VALUES (?,?,?,?,?)", (management, department, job, user, user_card_text))
+        flash (f'{user} ', 'user_card_add-info')
+    else:
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ? WHERE user_name = ?", (management, department, job, user_card_text, user))
+        flash (f'{user} ', 'user_card_update-info')
+    conn.commit()
+    conn.close()
 
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text)")
     conn.commit()
     conn.close()
-    
+
 @app.route('/data', methods=['GET', 'POST'])
 def data():
     create_table_data_fn()

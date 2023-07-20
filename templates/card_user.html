@@ -7,12 +7,12 @@
 
 <div class="search ">
     <div class="mb-2">
-        <label for="exampleFormControlTextarea1" class="form-label">Заполните карточку нового пользователя:</label>
+        <label for="exampleFormControlTextarea1" class="form-label">Заполните карточку пользователя:</label>
     </div>
-    <form class="needs-validation" action="" method="POST" novalidate>
+    <form class="needs-validation" hx-post="/card_user" hx-target="#main" novalidate>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <select class="form-select" id="inputGroupSelect01" required>
+            <select class="form-select" id="inputGroupSelect01" name="management" required>
             <option selected></option>
             {% for value in extract_management_data %}
             <option value="{{value.management_name}}">{{value.management_name}}</option>
@@ -21,7 +21,7 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Отдел:</span>
-            <select class="form-select" id="inputGroupSelect01" required>
+            <select class="form-select" id="inputGroupSelect01" name="department" required>
             <option selected></option>
             {% for value in extract_department_data %}
             <option value="{{value.department_name}}">{{value.department_name}}</option>
@@ -30,7 +30,7 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Должность:</span>
-            <select class="form-select" id="inputGroupSelect01" required>
+            <select class="form-select" id="inputGroupSelect01" name="job" required>
             <option selected></option>
             {% for value in extract_job_data %}
             <option value="{{value.job_name}}">{{value.job_name}}</option>
@@ -39,7 +39,7 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-            <select class="form-select" id="inputGroupSelect01" required>
+            <select class="form-select" id="inputGroupSelect01" name="user" required>
             <option selected></option>
             {% for value in extract_user_name_data %}
             <option value="{{value.user_name}}">{{value.user_name}}</option>
@@ -51,9 +51,26 @@
             <textarea class="form-control" id="device_text"  name="user_card_text" rows="3" placeholder="Любая дополнительная информация" novalidate></textarea>
         </div>
         <div class="input-group mb-3">
-            <input  class="btn btn-warning" type="submit" value="Добавить пользователя" >
+            <input  class="btn btn-warning" type="submit" value="Внести данные" >
         </div>
     </form>
+    <div class="message_data">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                {% if category == 'user_card_add-info' %}
+                    {% set alert_class = 'alert-success' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                        <strong>{{ message }}</strong> - запись добавлена!
+                    </div>
+                {% elif category == 'user_card_update-info' %}
+                    {% set alert_class = 'alert-success' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                        <strong>{{ message }}</strong> - запись обновлена!
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+        </div>
 </div>
 
 {%endblock%}
