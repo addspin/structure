@@ -57,6 +57,8 @@ def data():
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
     if request.method == 'PUT':
+        form = request.form
+        update_management_data_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
@@ -77,6 +79,15 @@ def data():
 def mgm_edit():
     extract_management_data = extract_management_fn()
     return render_template('mgm_edit.html', extract_management_data=extract_management_data)
+
+def update_management_data_fn(form):
+    management = request.form['management']
+    management_old = request.form['management_old']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE management SET management_name = ? WHERE management_name = ?", (management, management_old))
+    conn.commit()
+    conn.close()
 
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
