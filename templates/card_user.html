@@ -14,33 +14,41 @@
             <span class="input-group-text" id="basic-addon1">Управление:</span>
             <select class="form-select" id="inputGroupSelect01" required>
             <option selected></option>
-            <option value="1">One</option>
+            {% for value in extract_management_data %}
+            <option value="{{value.management_name}}">{{value.management_name}}</option>
+            {% endfor %}
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Отдел:</span>
             <select class="form-select" id="inputGroupSelect01" required>
             <option selected></option>
-            <option value="1">One</option>
+            {% for value in extract_department_data %}
+            <option value="{{value.department_name}}">{{value.department_name}}</option>
+            {% endfor %}
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Должность:</span>
             <select class="form-select" id="inputGroupSelect01" required>
             <option selected></option>
-            <option value="1">One</option>
+            {% for value in extract_job_data %}
+            <option value="{{value.job_name}}">{{value.job_name}}</option>
+            {% endfor %}
             </select>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
             <select class="form-select" id="inputGroupSelect01" required>
             <option selected></option>
-            <option value="1">One</option>
+            {% for value in extract_user_name_data %}
+            <option value="{{value.user_name}}">{{value.user_name}}</option>
+            {% endfor %}
             </select>
         </div>
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">Примечение:</label>
-            <textarea class="form-control" id="device_text"  name="device_text" rows="3" placeholder="Любая дополнительная информация" required></textarea>
+            <textarea class="form-control" id="device_text"  name="user_card_text" rows="3" placeholder="Любая дополнительная информация" novalidate></textarea>
         </div>
         <div class="input-group mb-3">
             <input  class="btn btn-warning" type="submit" value="Добавить пользователя" >

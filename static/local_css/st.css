@@ -38,7 +38,7 @@
 }
 
 .message_data {
-    display: flex;
+    padding-top: 30px;
 }
 a.button-alert{
     background-color: #eb3838;
