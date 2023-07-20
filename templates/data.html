@@ -102,8 +102,40 @@
     </div>
 </div>
 
-<!-- <div class="message_data bd-example m-0 border-0"> -->
 
-<!-- </div> -->
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+
+
+
+<div class="department_table">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                </div>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Управления:</th>
+                        <th>Инструменты:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for value in extract_management_data %}
+                    <tr>
+                        <td>{{value.management_name}}</td>
+                        <td>
+                            <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></a>
+                            <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>    
 
 {%endblock%}
