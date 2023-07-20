@@ -110,7 +110,7 @@
 
 
 
-<div class="department_table">
+<div class="department_table" hx-target="#department_table" hx-swap="outerHTML">
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row">
@@ -123,12 +123,13 @@
                         <th>Инструменты:</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="department_table" hx-target="closest tr" hx-swap="outerHTML">
                     {% for value in extract_management_data %}
                     <tr>
-                        <td>{{value.management_name}}</td>
+                        <td hx-get="/data/mgm_edit" hx-target="#department_table" hx-trigger="click">
+                            {{value.management_name}}
                         <td>
-                            <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></a>
+                            <!-- <a hx-get="/data/mgm_edit" hx-target="#department_table" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></a> -->
                             <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></a>
                         </td>
                     </tr>

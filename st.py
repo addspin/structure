@@ -49,13 +49,20 @@ def create_table_card_user_fn():
     conn.commit()
     conn.close()
 
-@app.route('/data', methods=['GET', 'POST'])
+@app.route('/data', methods=['GET', 'POST', 'PUT'])
 def data():
     create_table_data_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
+    if request.method == 'PUT':
+        extract_management_data = extract_management_fn()
+        extract_department_data = extract_department_fn()
+        extract_job_data = extract_job_fn()
+        extract_user_name_data = extract_user_name_fn()
+        return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+
     if request.method == 'POST':
         form = request.form
         add_data_fn(form)
@@ -66,13 +73,18 @@ def data():
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
+@app.route('/data/mgm_edit', methods=['GET', 'POST'])
+def mgm_edit():
+    extract_management_data = extract_management_fn()
+    return render_template('mgm_edit.html', extract_management_data=extract_management_data)
+
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS management (management_name varchar(300) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS department (department_name varchar(300) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS job (job_name varchar(300) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS user (user_name varchar(300) PRIMARY KEY)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
     conn.commit()
     conn.close()
 
@@ -105,6 +117,7 @@ def extract_management_fn():
         cursor.execute("SELECT * FROM management")
         management = cursor.fetchall()
         conn.close()
+        print(management)
         return management
 def extract_department_fn():
         conn = sqlite3.connect(path_db)
