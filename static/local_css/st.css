@@ -55,9 +55,27 @@
     padding-top: 30px;
 }
 .table_tools {
-    display: flex;
-    
+    /* display: flex; */
+
 }
+
+.tables.st {
+    border: 3px solid #DEE2E6;
+    width: 350px;
+    height: 200px;
+    text-align: center;
+  }
+.tables.st td, table.st th {
+    border: 1px solid #FFFFFF;
+    padding: 3px 2px;
+  }
+  .tables.st thead {
+      border-bottom: 2px solid #DEE2E6;
+  }
+  .tables.st thead th {
+    font-weight: bold;
+    text-align: center;
+  }
 a.button-alert{
     background-color: #eb3838;
     color: #fff;

@@ -103,44 +103,33 @@
 </div>
 
 
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
-
-
-
 <!-- <div class="department_table" hx-target="#department_table" hx-swap="outerHTML"> -->
-     <div class="search_data">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Управления:</th>
-                        <th>Инструменты:</th>
-                    </tr>
-                </thead>
-                <tbody id="department_table" hx-target="closest tr" hx-swap="outerHTML">
-                    {% for value in extract_management_data %}
-                    <tr>
-                        <td hx-get="/data/mgm_edit" hx-target="#department_table" hx-trigger="click">
-                            {{value.management_name}}
-                        <td class="table_tools">
-                            <!-- <a hx-get="/data/mgm_edit" hx-target="#department_table" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></a> -->
-                            <!-- <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></a> -->
-
-                            <button type="button" class="btn btn-outline-danger">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
-                    </svg>
-                                Удалить
-                              </button>
-
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>    
-
+<div class="search_data">
+    <table class="tables st  ">
+        <!-- table-bordered -->
+        <thead>
+            <tr >
+                <th >Управления:</th>
+                <!-- <th style="border-width: 0px;">Инструменты:</th> -->
+            </tr>
+        </thead>
+        <tbody  id="department_table" hx-target="closest tr" hx-swap="outerHTML">
+            {% for value in extract_management_data %}
+            <tr >
+                <td  hx-get="/data/mgm_edit" hx-target="#department_table" hx-trigger="click">
+                    {{value.management_name}}
+                <td class="table_tools">
+                    <button type="button" class="btn btn-outline-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"></path>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"></path>
+                          </svg>
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {%endblock%}
