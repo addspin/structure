@@ -54,10 +54,6 @@
 .message_data {
     padding-top: 30px;
 }
-.table_tools {
-    /* display: flex; */
-
-}
 
 .table_head  {
     overflow: auto;

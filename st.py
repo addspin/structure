@@ -49,22 +49,14 @@ def create_table_card_user_fn():
     conn.commit()
     conn.close()
 
-@app.route('/data', methods=['GET', 'POST', 'PUT'])
+@app.route('/data', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def data():
     create_table_data_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
-    if request.method == 'PUT':
-        form = request.form
-        update_management_data_fn(form)
-        extract_management_data = extract_management_fn()
-        extract_department_data = extract_department_fn()
-        extract_job_data = extract_job_fn()
-        extract_user_name_data = extract_user_name_fn()
-        return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
-
+ 
     if request.method == 'POST':
         form = request.form
         add_data_fn(form)
@@ -80,20 +72,109 @@ def mgm_edit():
     extract_management_data = extract_management_fn()
     return render_template('mgm_edit.html', extract_management_data=extract_management_data)
 
-def update_management_data_fn(form):
-    management = request.form['management']
-    management_old = request.form['management_old']
+@app.route('/data/update', methods=['PUT'])
+def update():
+    if request.method == 'PUT':
+        form_data = request.form.to_dict()
+        form_keys = request.form.keys()
+        if 'management' in form_keys:
+            type_data_new = 'management'
+            value_new = form_data['management']
+        if 'management_old' in form_keys:
+            type_data_old = 'management_old'
+            value_old = form_data['management_old']
+            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            extract_management_data = extract_management_fn()
+            extract_department_data = extract_department_fn()
+            extract_job_data = extract_job_fn()
+            extract_user_name_data = extract_user_name_fn()
+            return redirect(url_for('data'))
+
+        if 'department' in form_keys:
+            type_data_new = 'department'
+            value_new = form_data['department']
+        if 'department_old' in form_keys:
+            type_data_old = 'department_old'
+            value_old = form_data['department_old']
+            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            extract_management_data = extract_management_fn()
+            extract_department_data = extract_department_fn()
+            extract_job_data = extract_job_fn()
+            extract_user_name_data = extract_user_name_fn()
+            return redirect(url_for('data'))
+        
+        if 'job' in form_keys:
+            type_data_new = 'job'
+            value_new = form_data['job']
+        if 'job_old' in form_keys:
+            type_data_old = 'job_old'
+            value_old = form_data['job_old']
+            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            extract_management_data = extract_management_fn()
+            extract_department_data = extract_department_fn()
+            extract_job_data = extract_job_fn()
+            extract_user_name_data = extract_user_name_fn()
+            return redirect(url_for('data'))
+        
+        if 'user' in form_keys:
+            type_data_new = 'user'
+            value_new = form_data['user']
+        if 'user_old' in form_keys:
+            type_data_old = 'user_old'
+            value_old = form_data['user_old']
+            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            extract_management_data = extract_management_fn()
+            extract_department_data = extract_department_fn()
+            extract_job_data = extract_job_fn()
+            extract_user_name_data = extract_user_name_fn()
+            return redirect(url_for('data'))
+
+def update_data_fn(value_new,type_data_new,value_old,type_data_old):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name FROM management WHERE management_name = ?", (management,))
+    # Существует запись или нет?
+    cursor.execute(f"SELECT {type_data_new}_name FROM {type_data_new} WHERE {type_data_new}_name = ?", (value_new,))
     result = cursor.fetchone()
     if result is None:
-        cursor.execute("UPDATE management SET management_name = ? WHERE management_name = ?", (management, management_old))
+        cursor.execute(f"UPDATE {type_data_new} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
         conn.commit()
         conn.close()
     else:
-         flash (f'{management} ', 'management-update-warning')
+         flash (f'{value_new} ', 'management-update-warning')
+
+@app.route('/data/delete', methods=['DELETE', 'POST'])
+def delete():
+    if request.method == 'DELETE':
+        form_data = request.form.to_dict()
+        form_keys = request.form.keys()
+        if 'management' in form_keys:
+            type_data = 'management'
+            value = form_data['management']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
+        if 'department' in form_data:
+            type_data = 'department'
+            value = form_data['department']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
+        if 'job' in form_data:
+            type_data = 'job'
+            value = form_data['job']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
+        if 'user' in form_data:
+            type_data = 'user'
+            value = form_data['user']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
    
+def delete_data_fn(value,type_data):
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute(f"DELETE FROM {type_data} WHERE {type_data}_name = ?", (value,))
+    flash (f'{value} ', f'{type_data}-remove-info')
+    conn.commit()
+    conn.close()
 
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
@@ -134,7 +215,6 @@ def extract_management_fn():
         cursor.execute("SELECT * FROM management")
         management = cursor.fetchall()
         conn.close()
-        print(management)
         return management
 def extract_department_fn():
         conn = sqlite3.connect(path_db)
@@ -161,34 +241,6 @@ def extract_user_name_fn():
         user = cursor.fetchall()
         conn.close()
         return user
-@app.route('/remove_data', methods=['GET', 'POST'])
-def remove_data():
-    if request.method == 'POST':
-        form = request.form
-        remove_data_fn(form)
-    return redirect(url_for('data'))
-
-def remove_data_fn(form):
-    management = request.form['management']
-    department = request.form['department']
-    job = request.form['job']
-    user = request.form['user']
-    conn = sqlite3.connect(path_db)
-    cursor = conn.cursor()
-    if management != '':
-        cursor.execute("DELETE FROM management WHERE management_name = ?", (management,))
-        flash (f'{management} ', 'management-remove-info')
-    if department != '':
-        cursor.execute("DELETE FROM department WHERE department_name = ?", (department,))
-        flash (f'{department} ', 'department-remove-info')
-    if job != '':
-        cursor.execute("DELETE FROM job WHERE job_name = ?", (job,))
-        flash (f'{job} ', 'job-remove-info')
-    if user != '':
-        cursor.execute("DELETE FROM user WHERE user_name = ?", (user,))
-        flash (f'{user} ', 'user-remove-info')
-    conn.commit()
-    conn.close()
 
 @app.route('/export', methods=['GET', 'POST'])
 def export():
