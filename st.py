@@ -85,9 +85,15 @@ def update_management_data_fn(form):
     management_old = request.form['management_old']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("UPDATE management SET management_name = ? WHERE management_name = ?", (management, management_old))
-    conn.commit()
-    conn.close()
+    cursor.execute("SELECT management_name FROM management WHERE management_name = ?", (management,))
+    result = cursor.fetchone()
+    if result is None:
+        cursor.execute("UPDATE management SET management_name = ? WHERE management_name = ?", (management, management_old))
+        conn.commit()
+        conn.close()
+    else:
+         flash (f'{management} ', 'management-update-warning')
+   
 
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
