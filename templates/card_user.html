@@ -9,10 +9,10 @@
     <div class="mb-2">
         <label for="exampleFormControlTextarea1" class="form-label">Заполните карточку пользователя:</label>
     </div>
-    <form class="needs-validation" hx-post="/card_user" hx-target="#main" novalidate>
-        <div class="input-group mb-3">
+    <form hx-post="/card_user" hx-target="#main" hx-swap="outerHTML" id="card_user_form" class="needs-validation" action=""  novalidate>
+        <div id="management_test"  class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <select class="form-select" id="inputGroupSelect01" name="management" required>
+            <select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value">
             <option selected></option>
             {% for value in extract_management_data %}
             <option value="{{value.management_name}}">{{value.management_name}}</option>
@@ -54,6 +54,8 @@
             <input  class="btn btn-warning" type="submit" value="Внести данные" >
         </div>
     </form>
+    <div id="error-message" style="display: none;">Пожалуйста, заполните все поля!</div>
+    
     <div class="message_data">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
@@ -72,5 +74,27 @@
         {% endwith %}
         </div>
 </div>
+
+<!-- Проверка отправки пустых полей -->
+<script>
+    document.addEventListener('htmx:configRequest', function(event) {
+      const selectValue_management = document.querySelector('select[name="management"]').value;
+      const selectValue_department = document.querySelector('select[name="department"]').value;
+      const selectValue_job = document.querySelector('select[name="job"]').value;
+      const selectValue_user = document.querySelector('select[name="user"]').value;
+      if (selectValue_management === '' || selectValue_department === '' || selectValue_job === '' || selectValue_user === '') {
+        const parameters = Array.isArray(event.detail.parameters) ? event.detail.parameters : [event.detail.parameters];
+        event.detail.parameters = parameters.reduce(function(filteredParams, param) {
+          if (param.name !== 'select_value') {
+            filteredParams.push(param);
+          }
+          return filteredParams;
+        }, []);
+  
+        event.preventDefault(); // Предотвращаем отправку данных на сервер
+        document.getElementById('error-message').style.display = 'block'; // Отображаем сообщение об ошибке
+      }
+    });
+  </script>
 
 {%endblock%}
