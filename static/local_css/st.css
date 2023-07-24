@@ -135,6 +135,21 @@ a.button-alert{
     justify-content: space-between;
 }
 
+
+.error-message {
+    color: #ffffff;
+    font-weight: 400;
+    font-style: normal;
+    text-decoration: none;
+    padding: 7px 19px;
+    border: 0px solid #000000;
+    border-radius: 7px;
+    display: inline-block;
+    background-color: #eb3838;
+    width: 318px;
+}
+
+
 .um_form_service {
     padding: 10px; 
     /* padding-top: 22px; */

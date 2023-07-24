@@ -9,8 +9,8 @@
     <div class="mb-2">
         <label for="exampleFormControlTextarea1" class="form-label">Заполните карточку пользователя:</label>
     </div>
-    <form hx-post="/card_user" hx-target="#main" hx-swap="outerHTML" id="card_user_form" class="needs-validation" action=""  novalidate>
-        <div id="management_test"  class="input-group mb-3">
+    <form hx-post="/card_user" hx-target="#main" hx-swap="innerHTML" id="card_user_form" class="needs-validation" action=""  novalidate>
+        <div  class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
             <select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value">
             <option selected></option>
@@ -54,7 +54,13 @@
             <input  class="btn btn-warning" type="submit" value="Внести данные" >
         </div>
     </form>
-    <div id="error-message" style="display: none;">Пожалуйста, заполните все поля!</div>
+
+    <!-- <div id="error-message" style="display: none;" class="error-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        Пожалуйста, заполните все поля!
+      </div> -->
     
     <div class="message_data">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -69,6 +75,11 @@
                     <div class="alert {{alert_class}} fade show" role="alert">
                         <strong>{{ message }}</strong> - запись обновлена!
                     </div>
+                {% elif category == 'user_card_nodata-info' %}
+                    {% set alert_class = 'alert-warning' %}
+                    <div class="alert {{alert_class}} fade show" role="alert">
+                         <strong>Поля небыли должным образом заполнены!</strong>
+                    </div>
                 {% endif %}
             {% endfor %}
         {% endwith %}
@@ -76,13 +87,16 @@
 </div>
 
 <!-- Проверка отправки пустых полей -->
-<script>
+<!-- <script>
     document.addEventListener('htmx:configRequest', function(event) {
       const selectValue_management = document.querySelector('select[name="management"]').value;
       const selectValue_department = document.querySelector('select[name="department"]').value;
       const selectValue_job = document.querySelector('select[name="job"]').value;
       const selectValue_user = document.querySelector('select[name="user"]').value;
-      if (selectValue_management === '' || selectValue_department === '' || selectValue_job === '' || selectValue_user === '') {
+
+      const leavingPage = event.detail.headers['HX-Trigger'];
+
+      if ((selectValue_management === '' || selectValue_department === '' || selectValue_job === '' || selectValue_user === '') && leavingPage !== 'true'){
         const parameters = Array.isArray(event.detail.parameters) ? event.detail.parameters : [event.detail.parameters];
         event.detail.parameters = parameters.reduce(function(filteredParams, param) {
           if (param.name !== 'select_value') {
@@ -95,6 +109,6 @@
         document.getElementById('error-message').style.display = 'block'; // Отображаем сообщение об ошибке
       }
     });
-  </script>
+  </script> -->
 
 {%endblock%}

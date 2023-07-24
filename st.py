@@ -31,6 +31,18 @@ def add_card_user_fn(form):
     user_card_text = request.form['user_card_text']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
+    if management == '':
+        flash (f'{management} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if department == '':
+        flash (f'{department} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if job == '':
+        flash (f'{job} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if user == '':
+        flash (f'{user} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
