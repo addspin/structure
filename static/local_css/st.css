@@ -136,18 +136,38 @@ a.button-alert{
 }
 
 
-.error-message {
-    color: #ffffff;
-    font-weight: 400;
-    font-style: normal;
-    text-decoration: none;
-    padding: 7px 19px;
-    border: 0px solid #000000;
-    border-radius: 7px;
-    display: inline-block;
-    background-color: #eb3838;
-    width: 318px;
+.scroll-table-body {
+
+	overflow-x: auto;
+
 }
+
+.scroll-table thead th {
+
+	/* background: #1c1c1c; */
+
+}
+
+.scroll-table tbody tr:nth-child(even){
+	background: #fcfcfc;
+}
+ 
+/* Стили для скролла */
+::-webkit-scrollbar {
+	width: 6px;
+} 
+::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+} 
+::-webkit-scrollbar-thumb {
+	box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    background: #4690ff;
+    scroll-padding-block-start: 10px;
+    border-radius: 9999px;
+}
+
+
+
 
 
 .um_form_service {
@@ -354,7 +374,7 @@ a.button-alert{
 } */
 
 .mostly-customized-scrollbar::-webkit-scrollbar {
-    width: 2px;
+    width: 10px;
     height: 8px;
     background-color: rgb(177, 177, 177); /* or add it to the track */
     scroll-padding-left: 10px;

@@ -79,10 +79,47 @@ def data():
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
-@app.route('/data/mgm_edit', methods=['GET', 'POST'])
-def mgm_edit():
-    extract_management_data = extract_management_fn()
-    return render_template('mgm_edit.html', extract_management_data=extract_management_data)
+# @app.route('/data/mgm_edit', methods=['GET', 'POST'])
+# def mgm_edit():
+#     extract_management_data = extract_management_fn()
+#     return render_template('mgm_edit.html', extract_management_data=extract_management_data)
+
+@app.route('/data/mgm_edit_modal', methods=['GET', 'POST'])
+def mgm_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_management_data_modal = extract_management_data_modal_fn(form)
+        return render_template('mgm_edit_modal.html', extract_management_data_modal = extract_management_data_modal)
+
+def extract_management_data_modal_fn(form):
+    management_id = request.form['management_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT management_name FROM management WHERE id = ?", (management_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        return value
+
+@app.route('/data/dep_edit_modal', methods=['GET', 'POST'])
+def dep_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_department_data_modal = extract_department_data_modal_fn(form)
+        return render_template('dep_edit_modal.html', extract_department_data_modal=extract_department_data_modal)
+    
+def extract_department_data_modal_fn(form):
+    department_id = request.form['department_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT department_name FROM department WHERE id = ?", (department_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        print(value)
+        conn.close()
+        return value
 
 @app.route('/data/update', methods=['PUT'])
 def update():
@@ -151,8 +188,8 @@ def update_data_fn(value_new,type_data_new,value_old,type_data_old):
         cursor.execute(f"UPDATE {type_data_new} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
         conn.commit()
         conn.close()
-    else:
-         flash (f'{value_new} ', 'management-update-warning')
+    # else:
+    #      flash (f'{value_new} ', 'management-update-warning')
 
 @app.route('/data/delete', methods=['DELETE', 'POST'])
 def delete():

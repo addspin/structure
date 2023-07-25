@@ -48,9 +48,6 @@
             <div class="" >
                 <input hx-trigger="click" hx-post="/data" hx-target="#main" hx-include="#search_form" class="btn btn-warning" type="submit" value="Добавить">
             </div>
-            <!-- <div class="" >
-                <input hx-trigger="click" hx-post="/remove_data" hx-target="#main" hx-include="#search_form" class="btn btn-danger" type="submit" value="Удалить">
-            </div> -->
         </div>
     </form>
 
@@ -113,25 +110,27 @@
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            Управления:
+            <strong>Управления:</strong>
             </button>
         </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    <table class="table_head  ">
-                        <thead>
+            <div id="collapseOne" class="accordion-collapse collapse show "  data-bs-parent="#accordionExample">
+                <div class="accordion-body scroll-table" style="overflow-x: auto;  height: 30vh;">
+                    <table class="table_head">
+                        <!-- <thead>
                             <tr >
                                 <th >Управления:</th>
                             </tr>
-                        </thead>
+                        </thead> -->
                         </table>
-                        <table class="table_body">
+                        <table class="table_body mostly-customized-scrollbar" >
                         <tbody  id="management_table" hx-target="closest tr" hx-swap="outerHTML">
                             {% for value in extract_management_data %}
                             <tr >
-                                <td style="width: 1100px;" hx-get="/data/mgm_edit" hx-target="#management_table" hx-trigger="click">
+                                <td style="width: 1100px;" hx-post="/data/mgm_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
                                     {{value.management_name}}
-                                <input style="width: 1100px;" type="hidden" name="management" value="{{value.management_name}}">
+                                <!-- <input style="width: 1100px;" type="hidden" name="management" value="{{value.management_name}}"> -->
+                                <input style="width: 1100px;" type="hidden" name="management_id" value="{{value.id}}">
+
                                 <td style="text-align: center;"  class="">
                                     <!-- Удаление записи -->
                                     <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
@@ -152,25 +151,26 @@
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-            Отделы:
+            <strong>Отделы:</strong>
             </button>
         </h2>
             <div id="collapseTwo" class="accordion-collapse collapse"  data-bs-parent="#accordionExample">
-                <div class="accordion-body">
+                <div class="accordion-body scroll-table" style="overflow-x: auto;  height: 30vh;">
                     <table class="table_head  ">
-                        <thead>
+                        <!-- <thead>
                             <tr >
                                 <th >Отделы:</th>
                             </tr>
-                        </thead>
+                        </thead> -->
                         </table>
                         <table class="table_body">
                         <tbody  id="department_table" hx-target="closest tr" hx-swap="outerHTML">
                             {% for value in extract_department_data %}
                             <tr >
-                                <td style="width: 1100px;" hx-get="/data/dep_edit" hx-target="#department_table" hx-trigger="click">
+                                <td style="width: 1100px;" hx-post="/data/dep_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
                                     {{value.department_name}}
-                                <input style="width: 1100px;" type="hidden" name="department" value="{{value.department_name}}">
+                                <!-- <input style="width: 1100px;" type="hidden" name="department" value="{{value.department_name}}"> -->
+                                <input style="width: 1100px;" type="hidden" name="department_id" value="{{value.id}}">
                                 <td style="text-align: center;"  class="">
                                     <!-- Удаление записи -->
                                     <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
@@ -186,8 +186,23 @@
                 </div>
             </div>
         </div>
-
-
+        <div id="modal_window_edit"></div>
 </div>
 
+<!-- Показываем модельное окно -->
+<script>
+function closeModal() {
+	var container = document.getElementById("management_table")
+	var backdrop = document.getElementById("modal-backdrop")
+	var modal = document.getElementById("modal")
+
+	modal.classList.remove("show")
+	backdrop.classList.remove("show")
+
+	setTimeout(function() {
+		container.removeChild(backdrop)
+		container.removeChild(modal)
+	}, 200)
+}
+</script>
 {%endblock%}
