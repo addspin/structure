@@ -1,10 +1,17 @@
-from flask import Flask, render_template, url_for, request, jsonify, session, flash, redirect, send_file
+from flask import Flask, render_template, url_for, request, flash, redirect
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
+import os
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'some random string'
 path_db = 'db/st.db'
+
+# Конфигурация загрузки файлов
+app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/photos'  # Папка для сохранения загруженных фотографий
+photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
@@ -18,12 +25,38 @@ def card_user():
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
+    
+    if request.method == 'POST' and 'photo' in request.files:
+        form = request.form
+        photo_name = photos.save(request.files['photo'])
+        add_card_user_fn(form, photo_name)
+        return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    
     if request.method == 'POST':
-         form = request.form
-         add_card_user_fn(form)
+        form = request.form
+        photo_name = ''
+        add_card_user_fn(form, photo_name)
+        return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    
     return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
-def add_card_user_fn(form):
+# @app.route('/test')
+# def test():
+#     photo_path = photo_path_fn()
+#     return render_template('test.html', photo_path=photo_path)
+
+# def photo_path_fn():
+#     conn = sqlite3.connect(path_db)
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM photos")
+#     result = cursor.fetchone()
+#     if result:
+#         value = result[0]
+#         conn.close()
+#         return value
+    
+
+def add_card_user_fn(form, photo_name):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
@@ -46,10 +79,10 @@ def add_card_user_fn(form):
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text) VALUES (?,?,?,?,?)", (management, department, job, user, user_card_text))
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name) VALUES (?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name))
         flash (f'{user} ', 'user_card_add-info')
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ? WHERE user_name = ?", (management, department, job, user_card_text, user))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ? WHERE user_name = ?", (management, department, job, user_card_text, user, photo_name))
         flash (f'{user} ', 'user_card_update-info')
     conn.commit()
     conn.close()
@@ -57,7 +90,7 @@ def add_card_user_fn(form):
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text, photo_name varchar(300))")
     conn.commit()
     conn.close()
 
@@ -260,6 +293,7 @@ def delete_data_fn(value,type_data):
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
+    # cursor.execute("CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY, photo_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
