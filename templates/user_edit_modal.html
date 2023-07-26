@@ -1,0 +1,20 @@
+<div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+	<div style="max-width: 1100px;" class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Вы редактируете пользователя:</h5>
+		</div>
+		<div id="modal-body" class="modal-body">
+     
+      <input  name="job" value="{{extract_user_data_modal}}" class="form-control">
+      <input type="hidden" style="width: 1100px;" name="job_old" value="{{extract_user_data_modal}}" class="form-control">
+     
+		</div>
+		<div class="modal-footer">
+      <button hx-get="/data" hx-target="#main" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+      <button hx-put="/data/update" hx-target="#main" hx-trigger="click"  hx-include="#modal-body" type="button" class="btn btn-primary">Сохранить</button>
+		</div>
+	  </div>
+	</div>
+  </div>

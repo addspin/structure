@@ -79,10 +79,6 @@ def data():
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
-# @app.route('/data/mgm_edit', methods=['GET', 'POST'])
-# def mgm_edit():
-#     extract_management_data = extract_management_fn()
-#     return render_template('mgm_edit.html', extract_management_data=extract_management_data)
 
 @app.route('/data/mgm_edit_modal', methods=['GET', 'POST'])
 def mgm_edit_modal():
@@ -117,7 +113,42 @@ def extract_department_data_modal_fn(form):
     result = cursor.fetchone()
     if result:
         value = result[0]
-        print(value)
+        conn.close()
+        return value
+
+@app.route('/data/job_edit_modal', methods=['GET', 'POST'])
+def job_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_job_data_modal = extract_job_data_modal_fn(form)
+        return render_template('job_edit_modal.html', extract_job_data_modal=extract_job_data_modal)
+    
+def extract_job_data_modal_fn(form):
+    job_id = request.form['job_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT job_name FROM job WHERE id = ?", (job_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        return value
+    
+@app.route('/data/user_edit_modal', methods=['GET', 'POST'])
+def user_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_user_data_modal = extract_user_data_modal_fn(form)
+        return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal)
+    
+def extract_user_data_modal_fn(form):
+    user_id = request.form['user_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_name FROM user WHERE id = ?", (user_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
         conn.close()
         return value
 
