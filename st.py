@@ -88,10 +88,10 @@ def mgm_edit_modal():
         return render_template('mgm_edit_modal.html', extract_management_data_modal = extract_management_data_modal)
 
 def extract_management_data_modal_fn(form):
-    management_id = request.form['management_id']
+    management_edit_id = request.form['management_edit_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name FROM management WHERE id = ?", (management_id,))
+    cursor.execute("SELECT management_name FROM management WHERE id = ?", (management_edit_id,))
     result = cursor.fetchone()
     if result:
         value = result[0]
@@ -106,10 +106,10 @@ def dep_edit_modal():
         return render_template('dep_edit_modal.html', extract_department_data_modal=extract_department_data_modal)
     
 def extract_department_data_modal_fn(form):
-    department_id = request.form['department_id']
+    department_edit_id = request.form['department_edit_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT department_name FROM department WHERE id = ?", (department_id,))
+    cursor.execute("SELECT department_name FROM department WHERE id = ?", (department_edit_id,))
     result = cursor.fetchone()
     if result:
         value = result[0]
@@ -124,10 +124,10 @@ def job_edit_modal():
         return render_template('job_edit_modal.html', extract_job_data_modal=extract_job_data_modal)
     
 def extract_job_data_modal_fn(form):
-    job_id = request.form['job_id']
+    job_edit_id = request.form['job_edit_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT job_name FROM job WHERE id = ?", (job_id,))
+    cursor.execute("SELECT job_name FROM job WHERE id = ?", (job_edit_id,))
     result = cursor.fetchone()
     if result:
         value = result[0]
@@ -142,13 +142,14 @@ def user_edit_modal():
         return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal)
     
 def extract_user_data_modal_fn(form):
-    user_id = request.form['user_id']
+    user_edit_id = request.form['user_edit_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT user_name FROM user WHERE id = ?", (user_id,))
+    cursor.execute("SELECT user_name FROM user WHERE id = ?", (user_edit_id,))
     result = cursor.fetchone()
     if result:
         value = result[0]
+        print(value)
         conn.close()
         return value
 
@@ -227,24 +228,24 @@ def delete():
     if request.method == 'DELETE':
         form_data = request.form.to_dict()
         form_keys = request.form.keys()
-        if 'management' in form_keys:
+        if 'management_delete_name' in form_keys:
             type_data = 'management'
-            value = form_data['management']
+            value = form_data['management_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
-        if 'department' in form_data:
+        if 'department_delete_name' in form_data:
             type_data = 'department'
-            value = form_data['department']
+            value = form_data['department_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
-        if 'job' in form_data:
+        if 'job_delete_name' in form_data:
             type_data = 'job'
-            value = form_data['job']
+            value = form_data['job_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
-        if 'user' in form_data:
+        if 'user_delete_name' in form_data:
             type_data = 'user'
-            value = form_data['user']
+            value = form_data['user_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
    
@@ -312,6 +313,15 @@ def extract_job_fn():
         job = cursor.fetchall()
         conn.close()
         return job
+
+# def extract_user_fn():
+#         conn = sqlite3.connect(path_db)
+#         conn.row_factory = sqlite3.Row
+#         cursor = conn.cursor()
+#         cursor.execute("SELECT * FROM user")
+#         user = cursor.fetchall()
+#         conn.close()
+#         return user
 
 def extract_user_name_fn():
         conn = sqlite3.connect(path_db)

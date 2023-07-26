@@ -126,12 +126,13 @@
                         <tbody  id="management_table" hx-target="closest tr" hx-swap="outerHTML">
                             {% for value in extract_management_data %}
                             <tr >
-                                <td style="width: 1100px;" hx-post="/data/mgm_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
+                                <td style="width: 1100px;" hx-post="/data/mgm_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"management_edit_id":"{{value.id}}"'>
                                     {{value.management_name}}
-                                <input style="width: 1100px;" type="hidden" name="management_id" value="{{value.id}}">
+                                <input id="management_edit_id" style="width: 1100px;" type="hidden" name="management_edit_id" value="{{value.id}}">
+                                <input id="management_delete_name" style="width: 1100px;" type="hidden" name="management_delete_name" value="{{value.management_name}}">
                                 <td style="text-align: center;"  class="">
                                     <!-- Удаление записи -->
-                                    <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
+                                    <button hx-delete="/data/delete" hx-vals='"management_delete_name":"{{value.management_name}}"' hx-target="#main" type="button" class="btn btn btn-danger">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
                                             <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/>
                                             </svg>                                    
@@ -147,7 +148,7 @@
     
         <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
             <strong>Отделы:</strong>
             </button>
         </h2>
@@ -164,12 +165,13 @@
                         <tbody  id="department_table" hx-target="closest tr" hx-swap="outerHTML">
                             {% for value in extract_department_data %}
                             <tr >
-                                <td style="width: 1100px;" hx-post="/data/dep_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
+                                <td style="width: 1100px;" hx-post="/data/dep_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"department_edit_id":"{{value.id}}"'>
                                     {{value.department_name}}
-                                <input style="width: 1100px;" type="hidden" name="department_id" value="{{value.id}}">
+                                <input id="department_edit_id" style="width: 1100px;" type="hidden" name="department_edit_id" value="{{value.id}}">
+                                <input id="department_delete_name" style="width: 1100px;" type="hidden" name="department_delete_name" value="{{value.department_name}}">
                                 <td style="text-align: center;"  class="">
                                     <!-- Удаление записи -->
-                                    <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
+                                    <button hx-delete="/data/delete" hx-vals='"department_delete_name":"{{value.department_name}}"' hx-target="#main" type="button" class="btn btn btn-danger">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
                                             <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/>
                                             </svg>                                    
@@ -185,8 +187,8 @@
 
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                <strong>Должность:</strong>
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <strong>Должности:</strong>
                 </button>
             </h2>
                 <div id="collapseThree" class="accordion-collapse collapse"  data-bs-parent="#accordionExample">
@@ -194,7 +196,7 @@
                         <table class="table_head  ">
                             <!-- <thead>
                                 <tr >
-                                    <th >Должность:</th>
+                                    <th >Должности:</th>
                                 </tr>
                             </thead> -->
                             </table>
@@ -202,12 +204,13 @@
                             <tbody  id="job_table" hx-target="closest tr" hx-swap="outerHTML">
                                 {% for value in extract_job_data %}
                                 <tr >
-                                    <td style="width: 1100px;" hx-post="/data/job_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
+                                    <td style="width: 1100px;" hx-post="/data/job_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"job_edit_id":"{{value.id}}"'>
                                         {{value.job_name}}
-                                    <input style="width: 1100px;" type="hidden" name="job_id" value="{{value.id}}">
+                                    <input id="job_edit_id" style="width: 1100px;" type="hidden" name="job_edit_id" value="{{value.id}}">
+                                    <input id="job_delete_name" style="width: 1100px;" type="hidden" name="job_delete_name" value="{{value.job_name}}">
                                     <td style="text-align: center;"  class="">
                                         <!-- Удаление записи -->
-                                        <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
+                                        <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-vals='"job_delete_name":"{{value.job_name}}"' hx-target="#main" type="button" class="btn btn btn-danger">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
                                                 <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/>
                                                 </svg>                                    
@@ -223,41 +226,42 @@
 
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-                    <strong>Ф.И.О:</strong>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    <strong>Пользователи:</strong>
                     </button>
                 </h2>
-                    <div id="collapseFour" class="accordion-collapse collapse"  data-bs-parent="#accordionExample">
-                        <div class="accordion-body scroll-table" style="overflow-x: auto;  height: 30vh;">
-                            <table class="table_head  ">
-                                <!-- <thead>
-                                    <tr >
-                                        <th >Ф.И.О:</th>
-                                    </tr>
-                                </thead> -->
-                                </table>
-                                <table class="table_body">
-                                <tbody  id="user_table" hx-target="closest tr" hx-swap="outerHTML">
-                                    {% for value in extract_user_data %}
-                                    <tr >
-                                        <td style="width: 1100px;" hx-post="/data/user_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-include="closest tr">
-                                            {{value.user_name}}
-                                        <input style="width: 1100px;" type="hidden" name="user_id" value="{{value.id}}">
-                                        <td style="text-align: center;"  class="">
-                                            <!-- Удаление записи -->
-                                            <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-include="closest tr" hx-target="#main" type="button" class="btn btn btn-danger">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
-                                                    <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/>
-                                                    </svg>                                    
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
+                <div id="collapseFour" class="accordion-collapse collapse"  data-bs-parent="#accordionExample">
+                    <div class="accordion-body scroll-table" style="overflow-x: auto;  height: 30vh;">
+                        <table class="table_head  ">
+                            <!-- <thead>
+                                <tr >
+                                    <th >Пользователи:</th>
+                                </tr>
+                            </thead> -->
                             </table>
-                        </div>
+                            <table class="table_body">
+                            <tbody  id="user_table" hx-target="closest tr" hx-swap="outerHTML">
+                                {% for value in extract_user_name_data %}
+                                <tr >
+                                    <td style="width: 1100px;" hx-post="/data/user_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"user_edit_id":"{{value.id}}"'>
+                                        {{value.user_name}}
+                                    <input id="user_edit_id" style="width: 1100px;" type="hidden" name="user_id" value="{{value.id}}">
+                                    <input id="user_delete_name" style="width: 1100px;" type="hidden" name="user_delete_name" value="{{value.user_name}}">
+                                    <td style="text-align: center;"  class="">
+                                        <!-- Удаление записи -->
+                                        <button hx-delete="/data/delete" hx-confirm="Are you sure you wish to delete your account?" hx-vals='"user_delete_name":"{{value.user_name}}"' hx-target="#main" type="button" class="btn btn btn-danger">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
+                                                <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/>
+                                                </svg>                                    
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
         <div id="modal_window_edit"></div>
 </div>
