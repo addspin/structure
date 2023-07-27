@@ -13,6 +13,7 @@ app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/photos'  # Папка для со�
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def search():
     return render_template('search.html', side_pos='active')
@@ -53,24 +54,7 @@ def card_user_update():
         photo_name = ''
         add_card_user_fn(form, photo_name)
         return redirect(url_for('data'))    
-
-
-# @app.route('/test')
-# def test():
-#     photo_path = photo_path_fn()
-#     return render_template('test.html', photo_path=photo_path)
-
-# def photo_path_fn():
-#     conn = sqlite3.connect(path_db)
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM photos")
-#     result = cursor.fetchone()
-#     if result:
-#         value = result[0]
-#         conn.close()
-#         return value
     
-
 def add_card_user_fn(form, photo_name):
     management = request.form['management']
     department = request.form['department']
@@ -186,11 +170,12 @@ def extract_job_data_modal_fn(form):
 def user_edit_modal():
     if request.method == 'POST':
         form = request.form
+        extract_user_name = extract_user_name_fn()
         extract_user_data_modal = extract_user_data_modal_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
-        return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        return render_template('user_edit_modal.html', extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
     
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
@@ -212,10 +197,6 @@ def update():
             type_data_old = 'management_old'
             value_old = form_data['management_old']
             update_data_fn(value_new,type_data_new,value_old,type_data_old)
-            extract_management_data = extract_management_fn()
-            extract_department_data = extract_department_fn()
-            extract_job_data = extract_job_fn()
-            extract_user_name_data = extract_user_name_fn()
             return redirect(url_for('data'))
 
         if 'department' in form_keys:
@@ -225,10 +206,6 @@ def update():
             type_data_old = 'department_old'
             value_old = form_data['department_old']
             update_data_fn(value_new,type_data_new,value_old,type_data_old)
-            extract_management_data = extract_management_fn()
-            extract_department_data = extract_department_fn()
-            extract_job_data = extract_job_fn()
-            extract_user_name_data = extract_user_name_fn()
             return redirect(url_for('data'))
         
         if 'job' in form_keys:
@@ -238,10 +215,6 @@ def update():
             type_data_old = 'job_old'
             value_old = form_data['job_old']
             update_data_fn(value_new,type_data_new,value_old,type_data_old)
-            extract_management_data = extract_management_fn()
-            extract_department_data = extract_department_fn()
-            extract_job_data = extract_job_fn()
-            extract_user_name_data = extract_user_name_fn()
             return redirect(url_for('data'))
         
         if 'user' in form_keys:
@@ -251,10 +224,6 @@ def update():
             type_data_old = 'user_old'
             value_old = form_data['user_old']
             update_data_fn(value_new,type_data_new,value_old,type_data_old)
-            extract_management_data = extract_management_fn()
-            extract_department_data = extract_department_fn()
-            extract_job_data = extract_job_fn()
-            extract_user_name_data = extract_user_name_fn()
             return redirect(url_for('data'))
 
 def update_data_fn(value_new,type_data_new,value_old,type_data_old):
