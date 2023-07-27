@@ -52,7 +52,8 @@
 }
 
 .message_data {
-    padding-top: 30px;
+    /* padding-top: 30px */
+    padding: 0;
 }
 
 .table_head  {
@@ -142,11 +143,6 @@ a.button-alert{
 
 }
 
-.scroll-table thead th {
-
-	/* background: #1c1c1c; */
-
-}
 
 .scroll-table tbody tr:nth-child(even){
 	background: #fcfcfc;

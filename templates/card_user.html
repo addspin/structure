@@ -46,33 +46,34 @@
             {% endfor %}
             </select>
         </div>
-        <div class="raw">
-            <div class="mb-3 col">
-                <label for="exampleFormControlTextarea1" class="form-label">Примечение:</label>
-                <textarea class="form-control" id="device_text"  name="user_card_text" rows="3" placeholder="Любая дополнительная информация (Поле может не заполняться)" novalidate></textarea>
+        <div class="row">
+            <div class="col-sm-5 col-md-6">
+                <label for="file_upload" class="form-label">Примечение:</label>
             </div>
-            
-            <div class="col align-items-center" >
-                <svg  xmlns="http://www.w3.org/2000/svg" width="100" height="120" fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 15 20">
-                    <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                </svg>
+            <div class="col-sm-5 offset-sm-2 col-md-6 offset-md-0" >
+                <label for="exampleFormControlTextarea1" class="">Загрузить фото:</label>
+            </div>
+            <div class="col-sm-6 col-md-5 col-lg-6 mb-3">                
+                <textarea class="form-control" id="device_text"  name="user_card_text" value="" rows="3" placeholder="Любая дополнительная информация (Поле может не заполняться)" novalidate></textarea>
+            </div>
+            <div class="col-sm-6 col-md-5 offset-md-2 col-lg-6 offset-lg-0">
+                <div class="input-group">
+                    <label class="input-group-text" id="basic-addon1" for="file_upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+                        <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                      </svg> 
+                    </label>
+                    <input id="file_upload" name="photo" type="file" class="form-control">
+                </div>
             </div>
         </div>
         <div class="input-group mb-3">
-            <input  class="btn btn-warning" type="submit" value="Внести данные" >
+            <input  class="btn btn-warning" type="submit" value="Внести данные">
         </div>
-
-       
-        <input type="file" name="photo">
-
-
-
-
-
     </form>
     
-    <div class="message_data">
+    <div style="padding: 0px;" class="message_data">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
                 {% if category == 'user_card_add-info' %}

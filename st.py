@@ -30,7 +30,7 @@ def card_user():
         form = request.form
         photo_name = photos.save(request.files['photo'])
         add_card_user_fn(form, photo_name)
-        return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        return render_template('card_user.html',  side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
     if request.method == 'POST':
         form = request.form
@@ -38,7 +38,22 @@ def card_user():
         add_card_user_fn(form, photo_name)
         return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
-    return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    return render_template('card_user.html',  side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+
+@app.route('/card_user/update', methods=['GET', 'POST'])
+def card_user_update():    
+    if request.method == 'POST' and 'photo' in request.files:
+        form = request.form
+        photo_name = photos.save(request.files['photo'])
+        add_card_user_fn(form, photo_name)
+        return redirect(url_for('data'))
+
+    if request.method == 'POST':
+        form = request.form
+        photo_name = ''
+        add_card_user_fn(form, photo_name)
+        return redirect(url_for('data'))    
+
 
 # @app.route('/test')
 # def test():
@@ -82,7 +97,7 @@ def add_card_user_fn(form, photo_name):
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name) VALUES (?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name))
         flash (f'{user} ', 'user_card_add-info')
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ? WHERE user_name = ?", (management, department, job, user_card_text, user, photo_name))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, user))
         flash (f'{user} ', 'user_card_update-info')
     conn.commit()
     conn.close()
@@ -172,19 +187,18 @@ def user_edit_modal():
     if request.method == 'POST':
         form = request.form
         extract_user_data_modal = extract_user_data_modal_fn(form)
-        return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal)
+        extract_management_data = extract_management_fn()
+        extract_department_data = extract_department_fn()
+        extract_job_data = extract_job_fn()
+        return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
     
 def extract_user_data_modal_fn(form):
-    user_edit_id = request.form['user_edit_id']
+    user_edit_name = request.form['user_edit_name']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT user_name FROM user WHERE id = ?", (user_edit_id,))
-    result = cursor.fetchone()
-    if result:
-        value = result[0]
-        print(value)
-        conn.close()
-        return value
+    cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE user_name = ?", (user_edit_name,))
+    result = cursor.fetchall()
+    return result
 
 @app.route('/data/update', methods=['PUT'])
 def update():
@@ -248,6 +262,7 @@ def update_data_fn(value_new,type_data_new,value_old,type_data_old):
     cursor = conn.cursor()
     # Существует запись или нет?
     cursor.execute(f"SELECT {type_data_new}_name FROM {type_data_new} WHERE {type_data_new}_name = ?", (value_new,))
+    # Если запись не существует, заменить старую на новую
     result = cursor.fetchone()
     if result is None:
         cursor.execute(f"UPDATE {type_data_new} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
@@ -347,15 +362,6 @@ def extract_job_fn():
         job = cursor.fetchall()
         conn.close()
         return job
-
-# def extract_user_fn():
-#         conn = sqlite3.connect(path_db)
-#         conn.row_factory = sqlite3.Row
-#         cursor = conn.cursor()
-#         cursor.execute("SELECT * FROM user")
-#         user = cursor.fetchall()
-#         conn.close()
-#         return user
 
 def extract_user_name_fn():
         conn = sqlite3.connect(path_db)

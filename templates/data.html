@@ -44,7 +44,7 @@
                 {% endfor %}
             </datalist>
         </div>
-        <div class="button_line">
+        <div class="button_line mb-3">
             <div class="" >
                 <input hx-trigger="click" hx-post="/data" hx-target="#main" hx-include="#search_form" class="btn btn-warning" type="submit" value="Добавить">
             </div>
@@ -243,9 +243,10 @@
                                 <tbody  id="user_table" hx-target="closest tr" hx-swap="outerHTML">
                                     {% for value in extract_user_name_data %}
                                     <tr >
-                                        <td style="width: 1100px;" hx-post="/data/user_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"user_edit_id":"{{value.id}}"'>
+                                        <td style="width: 1100px;" hx-post="/data/user_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"user_edit_name":"{{value.user_name}}"'>
                                             {{value.user_name}}
-                                        <input id="user_edit_id" style="width: 1100px;" type="hidden" name="user_id" value="{{value.id}}">
+                                        <!-- <input id="user_edit_id" style="width: 1100px;" type="hidden" name="user_id" value="{{value.id}}"> -->
+                                        <input id="user_edit_name" style="width: 1100px;" type="hidden" name="user_edit_name" value="{{value.user_name}}">
                                         <input id="user_delete_name" style="width: 1100px;" type="hidden" name="user_delete_name" value="{{value.user_name}}">
                                         <td style="text-align: center;"  class="">
                                             <!-- Удаление записи -->
