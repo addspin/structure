@@ -56,6 +56,17 @@
     padding: 0;
 }
 
+.img_upload {
+    width: 5cm;
+    height: 5.2cm;
+    max-width: 400px;
+    max-height: 500px;
+    object-fit: cover;
+    background-color: #ffffff;
+
+}
+
+
 .table_head  {
     overflow: auto;
     width: 100%;

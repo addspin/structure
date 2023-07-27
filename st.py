@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, flash, redirect
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
@@ -9,19 +10,20 @@ app.config['SECRET_KEY'] = 'some random string'
 path_db = 'db/st.db'
 
 # Конфигурация загрузки файлов
-app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/photos'  # Папка для сохранения загруженных фотографий
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads/photos'  # Папка для сохранения загруженных фотографий
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
+    create_table_card_user_fn()
+    create_table_data_fn()
     return render_template('search.html', side_pos='active')
 
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
-    create_table_card_user_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
@@ -29,13 +31,18 @@ def card_user():
     
     if request.method == 'POST' and 'photo' in request.files:
         form = request.form
-        photo_name = photos.save(request.files['photo'])
+        photo = request.files['photo']
+        photo_name = secure_filename(photo.filename)
+        file_path = 'static/uploads/photos/' + photo_name
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        photos.save(request.files['photo'])
         add_card_user_fn(form, photo_name)
         return render_template('card_user.html',  side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
     if request.method == 'POST':
         form = request.form
-        photo_name = ''
+        photo_name = 'no_photo.png'
         add_card_user_fn(form, photo_name)
         return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
@@ -45,7 +52,12 @@ def card_user():
 def card_user_update():    
     if request.method == 'POST' and 'photo' in request.files:
         form = request.form
-        photo_name = photos.save(request.files['photo'])
+        photo = request.files['photo']
+        photo_name = secure_filename(photo.filename)
+        file_path = 'static/uploads/photos/' + photo_name
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        photos.save(request.files['photo'])
         add_card_user_fn(form, photo_name)
         return redirect(url_for('data'))
 
@@ -95,7 +107,7 @@ def create_table_card_user_fn():
 
 @app.route('/data', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def data():
-    create_table_data_fn()
+   
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
@@ -277,7 +289,6 @@ def delete_data_fn(value,type_data):
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    # cursor.execute("CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY, photo_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
