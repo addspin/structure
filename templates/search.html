@@ -6,24 +6,81 @@
 {%block search_form%}
 
 
-<div class="search ">
+<div id="test" class="search ">
+  <form id="search_tools" class="" >
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Управление:</span>
-        <select class="form-select" id="inputGroupSelect01">
+        <select   class="form-select" id="management" name="management" onchange="handleSelectChange_mgm()">
           <option selected>Выберите Управление</option>
-          <option value="1">One</option>
+          {% for value in extract_management_data %}
+          <option value="{{value.management_name}}">{{value.management_name}}</option>
+          {% endfor %}
         </select>
       </div>
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Отдел:</span>
-        <select class="form-select" id="inputGroupSelect01">
+        <select class="form-select" id="department" name="department" onchange="handleSelectChange_dep()">
           <option selected>Выберите Отдел</option>
-          <option value="1">One</option>
+          {% for value in extract_department_data %}
+          <option value="{{value.department_name}}">{{value.department_name}}</option>
+          {% endfor %}
         </select>
       </div>
     <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
     </div>
+  </form>
 </div>
+
+<div id="search_data" class="search_data">
+
+
+
+</div>
+
+
+
+
+
+<script>
+  function handleSelectChange_mgm() {
+            var selectElement_management = document.getElementById("management");
+            var selectedValue = selectElement_management.value;
+
+            var managementNames = []; // Создаем пустой массив
+            var values_form = htmx.values(htmx.find("#search_tools"));
+            // Добавляем значения из базы данных в массив
+            {% for value in extract_management_data %}
+                managementNames.push("{{value.management_name}}");
+            {% endfor %}
+
+            for (var i = 0; i < managementNames.length; i++) {
+                if (selectedValue === managementNames[i]) {
+                    htmx.ajax("post", "card", {target: '#search_data', swap: 'outerHTML', event: 'click', values: values_form});
+                    break;
+                }
+            }
+        }
+</script>
+<script>
+  function handleSelectChange_dep() {
+            var selectElement_department = document.getElementById("department");
+            var selectedValue = selectElement_department.value;
+
+            var departmentNames = []; // Создаем пустой массив
+            var values_form = htmx.values(htmx.find("#search_tools"));
+            // Добавляем значения из базы данных в массив
+            {% for value in extract_department_data %}
+                departmentNames.push("{{value.department_name}}");
+            {% endfor %}
+
+            for (var i = 0; i < departmentNames.length; i++) {
+                if (selectedValue === departmentNames[i]) {
+                    htmx.ajax("post", "card", {target: '#search_data', swap: 'outerHTML', event: 'click', values: values_form});
+                    break;
+                }
+            }
+        }
+</script>
 
 {%endblock%}

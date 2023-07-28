@@ -19,8 +19,17 @@ configure_uploads(app, photos)
 def search():
     create_table_card_user_fn()
     create_table_data_fn()
-    return render_template('search.html', side_pos='active')
+    extract_management_data = extract_management_fn()
+    extract_department_data = extract_department_fn()
+    return render_template('search.html', side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
 
+
+@app.route('/card', methods=['GET', 'POST'])
+def card():
+    if request.method == 'POST':
+
+        return render_template('card.html')
+    return render_template('card.html')
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
@@ -289,8 +298,9 @@ def delete_data_fn(value,type_data):
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
     conn.commit()
@@ -303,12 +313,19 @@ def add_data_fn(form):
     user = request.form['user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    if management != '':
-        cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
-        flash (f'{management} ', 'management-info')
-    if department != '':
-        cursor.execute("INSERT OR REPLACE INTO department (department_name) VALUES (?)", (department,))
-        flash (f'{department} ', 'department-info')
+    # if management or department == '':
+    #     flash (f'{management} ', 'mgm_dep-nodata-info')
+        # return redirect(url_for('data')) 
+    if management and department != '':
+        cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+        flash (f'{management} и {department}', 'mgm_dep-info')
+        # return redirect(url_for('data'))
+    # if management != '':
+    #     cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
+    #     flash (f'{management} ', 'management-info')
+    # if department != '':
+    #     cursor.execute("INSERT OR REPLACE INTO department (department_name) VALUES (?)", (department,))
+    #     flash (f'{department} ', 'department-info')
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'job-info')
