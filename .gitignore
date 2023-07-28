@@ -1,2 +1,3 @@
 db/
-static/uploads/
+static/uploads/photos/*
+!static/uploads/photos/no_photo.png
