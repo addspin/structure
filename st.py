@@ -132,6 +132,12 @@ def data():
         return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
+@app.route('/data/no_data', methods=['GET', 'POST'])
+def no_data():
+    no_data = request.form['no_data']
+    if no_data == '':
+        flash(f'{no_data} ', 'mgm_dep-nodata-info')
+    return redirect(url_for('data'))
 
 @app.route('/data/mgm_edit_modal', methods=['GET', 'POST'])
 def mgm_edit_modal():
@@ -320,6 +326,7 @@ def add_data_fn(form):
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
         flash (f'{management} и {department}', 'mgm_dep-info')
         # return redirect(url_for('data'))
+    
     # if management != '':
     #     cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
     #     flash (f'{management} ', 'management-info')
