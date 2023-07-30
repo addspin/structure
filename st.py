@@ -29,11 +29,13 @@ def dep_list():
     if request.method == 'POST':
         form = request.form
         dep_list_data = dep_list_fn(form)
+        print(dep_list_data)
         return render_template('dep_list.html', dep_list_data=dep_list_data)
     
 def dep_list_fn(form):
     mgm_value = request.form['management']
     conn = sqlite3.connect(path_db)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM mgm_dep WHERE management_name = ?", (mgm_value,))
     result = cursor.fetchall()
@@ -43,9 +45,37 @@ def dep_list_fn(form):
 @app.route('/card', methods=['GET', 'POST'])
 def card():
     if request.method == 'POST':
-
-        return render_template('card.html')
+        form = request.form
+        extract_user_data_search = extract_user_data_search_fn(form)
+        return render_template('card.html', extract_user_data_search=extract_user_data_search)
     return render_template('card.html')
+
+@app.route('/card_no_data', methods=['GET', 'POST'])
+def card_no_data():
+    return render_template('card_no_data.html')
+
+def extract_user_data_search_fn(form):
+    form_data = request.form.to_dict()
+    form_keys = request.form.keys()
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    # if 'management' in form_keys:
+    #     management = form_data['management']
+    #     cursor.execute("SELECT user_name FROM card_user WHERE management_name = ?", (management,))
+    #     result = cursor.fetchone()
+    #     if result is None:
+    #         return 
+
+    if 'management' in form_keys:
+        management = form_data['management']           
+        cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE management_name = ?", (management,))
+        result = cursor.fetchall()
+        return result
+    if 'department' in form_keys:
+        department = form_data['department']
+        cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE department_name = ?", (department,))
+        result = cursor.fetchall()
+        return result
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
@@ -321,7 +351,7 @@ def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
-    # cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
     # cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
