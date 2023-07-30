@@ -10,7 +10,7 @@
   <form id="search_tools" class="" >
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Управление:</span>
-        <select   class="form-select" id="management" name="management" onchange="handleSelectChange_mgm()">
+        <select hx-post="/search/dep_list" hx-target="#department" class="form-select" id="management" name="management" onchange="handleSelectChange_mgm()">
           <option selected>Выберите Управление</option>
           {% for value in extract_management_data %}
           <option value="{{value.management_name}}">{{value.management_name}}</option>

@@ -1,8 +1,9 @@
 from flask import Flask, render_template, url_for, request, flash, redirect
 from flask_uploads import UploadSet, configure_uploads, IMAGES
+from werkzeug.utils import secure_filename
 import sqlite3
 import os
-from werkzeug.utils import secure_filename
+
 
 
 app = Flask(__name__)
@@ -23,6 +24,21 @@ def search():
     extract_department_data = extract_department_fn()
     return render_template('search.html', side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
 
+@app.route ('/search/dep_list', methods=['GET', 'POST'])
+def dep_list():
+    if request.method == 'POST':
+        form = request.form
+        dep_list_data = dep_list_fn(form)
+        return render_template('dep_list.html', dep_list_data=dep_list_data)
+    
+def dep_list_fn(form):
+    mgm_value = request.form['management']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM mgm_dep WHERE management_name = ?", (mgm_value,))
+    result = cursor.fetchall()
+    conn.close()
+    return result
 
 @app.route('/card', methods=['GET', 'POST'])
 def card():
@@ -324,6 +340,7 @@ def add_data_fn(form):
         # return redirect(url_for('data')) 
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+        cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
         flash (f'{management} и {department}', 'mgm_dep-info')
         # return redirect(url_for('data'))
     
@@ -354,7 +371,7 @@ def extract_department_fn():
         conn = sqlite3.connect(path_db)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM department")
+        cursor.execute("SELECT * FROM mgm_dep")
         department = cursor.fetchall()
         conn.close()
         return department
