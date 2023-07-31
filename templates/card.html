@@ -1,22 +1,45 @@
-<div id="search_data" class="search_data">
-    <div class="card mb-3" style="max-width: 540px;">
-        <div class="row g-0">
-        <div class="col-md-4">
-            {% for value in extract_user_data_search %} 
-            <img class="img_upload" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
-            {% endfor %}
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-            {% for value in extract_user_data_search %}
-            <h5 class="card-title">{{ value[3] }}</h5>
-            {% endfor %}
-            {% for value in extract_user_data_search %}
-            <p class="card-text">{{ value[4] }}</p>
-            {% endfor %}
-            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+
+<div id="search_data" class="search_data d-flex gap-5">
+    {% for value in extract_user_data_search %} 
+    <!-- <div class="">
+        <div class="card  list-group mx-0 w-auto" style="max-width: 540px; max-height: auto;">
+            <div class="row g-0">
+            <div class="col">
+                <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
+            </div>
+            <div class="col">
+                <div class="card-body">
+                <h5 class="card-title">{{ value[3] }}</h5>
+                <p class="card-text">{{ value[2] }}</p>
+                <p class="card-text"><small class="text-body-secondary">{{ value[4] }}</small></p>
+                </div>
+            </div>
             </div>
         </div>
-        </div>
+    </div> -->
+
+    <div class="card mx-0 w-auto " style="" id="test">
+        
+       <label class="list-group-item list_items ">
+        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
+     
+         <span>
+           <h6>{{ value[3] }}</h6>
+           <small class="d-block text-muted">{{ value[2] }}
+            <hr class="um_service_hr">
+            <strong>URL или ip сервиса:</strong>  <a href="{{ value.service_url }}">{{ value[4] }}</a>
+            <hr class="um_service_hr">
+
+           </small>
+           <hr class="um_service_hr">
+  
+         </span> 
+       </label>
+    
+  
     </div>
+
+
+
+    {% endfor %}
 </div>

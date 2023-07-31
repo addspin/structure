@@ -7,7 +7,7 @@
 
 <div id="search" class="search">
     <form id="data_form" class="" >
-        <label for="" class="form-label">Поля "Управления" и "Отделы" заполняются вместе:</label>
+        <label for="" class="form-label">Поля "Управление:" и "Отдел:" заполняются вместе:</label>
         <div class="border border-secondary rounded" style="padding-left: 16px; padding-right: 16px;">
         <div class="input-group mb-3"></div>
         <div class="input-group mb-3">
@@ -134,9 +134,9 @@
                             <tbody  id="management_table" hx-target="closest tr" hx-swap="outerHTML">
                                 {% for value in extract_management_data %}
                                 <tr >
-                                    <td style="width: 1100px;" hx-post="/data/mgm_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"management_edit_id":"{{value.id}}"'>
+                                    <td style="width: 1100px;" hx-post="/data/mgm_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"management_edit":"{{value.management_name}}"'>
                                         {{value.management_name}}
-                                    <input id="management_edit_id" style="width: 1100px;" type="hidden" name="management_edit_id" value="{{value.id}}">
+                                    <!-- <input id="management_edit" style="width: 1100px;" type="hidden" name="management_edit" value="{{value.management_name}}"> -->
                                     <input id="management_delete_name" style="width: 1100px;" type="hidden" name="management_delete_name" value="{{value.management_name}}">
                                     <td style="text-align: center;"  class="">
                                         <!-- Удаление записи -->
@@ -173,9 +173,9 @@
                             <tbody  id="department_table" hx-target="closest tr" hx-swap="outerHTML">
                                 {% for value in extract_department_data %}
                                 <tr >
-                                    <td style="width: 1100px;" hx-post="/data/dep_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"department_edit_id":"{{value.id}}"'>
+                                    <td style="width: 1100px;" hx-post="/data/dep_edit_modal" hx-target="#modal_window_edit" hx-trigger="click" hx-vals='"department_edit":"{{value.department_name}}"'>
                                         {{value.department_name}}
-                                    <input id="department_edit_id" style="width: 1100px;" type="hidden" name="department_edit_id" value="{{value.id}}">
+                                    <!-- <input id="department_edit_id" style="width: 1100px;" type="hidden" name="department_edit_id" value="{{value.id}}"> -->
                                     <input id="department_delete_name" style="width: 1100px;" type="hidden" name="department_delete_name" value="{{value.department_name}}">
                                     <td style="text-align: center;"  class="">
                                         <!-- Удаление записи -->

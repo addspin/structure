@@ -45,37 +45,48 @@ def dep_list_fn(form):
 @app.route('/card', methods=['GET', 'POST'])
 def card():
     if request.method == 'POST':
-        form = request.form
-        extract_user_data_search = extract_user_data_search_fn(form)
-        return render_template('card.html', extract_user_data_search=extract_user_data_search)
-    return render_template('card.html')
+        form_data = request.form.to_dict()
+        form_keys = request.form.keys()
+        if 'management' in form_keys:
+            value = form_data['management']
+            data_type = 'management'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            if extract_user_data_search is None:
+                return render_template('card_no_data.html')
+            return render_template('card.html', extract_user_data_search=extract_user_data_search)
+        if 'department' in form_keys:
+            value = form_data['department']
+            data_type = 'department'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            if extract_user_data_search is None:
+                return render_template('card_no_data.html')
+            return render_template('card.html', extract_user_data_search=extract_user_data_search)
+
 
 @app.route('/card_no_data', methods=['GET', 'POST'])
 def card_no_data():
     return render_template('card_no_data.html')
 
-def extract_user_data_search_fn(form):
-    form_data = request.form.to_dict()
-    form_keys = request.form.keys()
+def extract_user_data_search_fn(value, data_type):
+   
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    # if 'management' in form_keys:
-    #     management = form_data['management']
-    #     cursor.execute("SELECT user_name FROM card_user WHERE management_name = ?", (management,))
-    #     result = cursor.fetchone()
-    #     if result is None:
-    #         return 
-
-    if 'management' in form_keys:
-        management = form_data['management']           
-        cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE management_name = ?", (management,))
+   
+    cursor.execute(f"SELECT user_name FROM card_user WHERE {data_type}_name = ?", (value,))
+    result = cursor.fetchone()
+    if result is None:
+        return result
+    else:
+        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE {data_type}_name = ?", (value,))
         result = cursor.fetchall()
         return result
-    if 'department' in form_keys:
-        department = form_data['department']
-        cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE department_name = ?", (department,))
-        result = cursor.fetchall()
-        return result
+             
+    
+    # if 'department' in form_keys:
+    #     department = form_data['department']
+    #     cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE department_name = ?", (department,))
+    #     result = cursor.fetchall()
+    #     return result
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
@@ -193,10 +204,10 @@ def mgm_edit_modal():
         return render_template('mgm_edit_modal.html', extract_management_data_modal = extract_management_data_modal)
 
 def extract_management_data_modal_fn(form):
-    management_edit_id = request.form['management_edit_id']
+    management_edit = request.form['management_edit']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name FROM management WHERE id = ?", (management_edit_id,))
+    cursor.execute("SELECT DISTINCT management_name FROM mgm_dep WHERE management_name = ?", (management_edit,))
     result = cursor.fetchone()
     if result:
         value = result[0]
@@ -211,10 +222,10 @@ def dep_edit_modal():
         return render_template('dep_edit_modal.html', extract_department_data_modal=extract_department_data_modal)
     
 def extract_department_data_modal_fn(form):
-    department_edit_id = request.form['department_edit_id']
+    department_edit = request.form['department_edit']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT department_name FROM department WHERE id = ?", (department_edit_id,))
+    cursor.execute("SELECT department_name FROM mgm_dep WHERE department_name = ?", (department_edit,))
     result = cursor.fetchone()
     if result:
         value = result[0]
@@ -265,53 +276,66 @@ def update():
         form_keys = request.form.keys()
         if 'management' in form_keys:
             type_data_new = 'management'
+            table_name = 'mgm_dep'
+            table_name_card_user = 'card_user'
             value_new = form_data['management']
         if 'management_old' in form_keys:
-            type_data_old = 'management_old'
             value_old = form_data['management_old']
-            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old)
             return redirect(url_for('data'))
 
         if 'department' in form_keys:
             type_data_new = 'department'
+            table_name = 'mgm_dep'
+            table_name_card_user = 'card_user'
             value_new = form_data['department']
         if 'department_old' in form_keys:
-            type_data_old = 'department_old'
             value_old = form_data['department_old']
-            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old)
             return redirect(url_for('data'))
         
         if 'job' in form_keys:
             type_data_new = 'job'
             value_new = form_data['job']
+            table_name = 'job'
+            table_name_card_user = 'card_user'
         if 'job_old' in form_keys:
-            type_data_old = 'job_old'
             value_old = form_data['job_old']
-            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old)
             return redirect(url_for('data'))
         
         if 'user' in form_keys:
             type_data_new = 'user'
+            table_name = 'user'
+            table_name_card_user = 'card_user'
             value_new = form_data['user']
         if 'user_old' in form_keys:
-            type_data_old = 'user_old'
             value_old = form_data['user_old']
-            update_data_fn(value_new,type_data_new,value_old,type_data_old)
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            # card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old) когда в дата будет исправление только имени пользователя
             return redirect(url_for('data'))
 
-def update_data_fn(value_new,type_data_new,value_old,type_data_old):
+def update_data_fn(table_name,value_new,type_data_new,value_old):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     # Существует запись или нет?
-    cursor.execute(f"SELECT {type_data_new}_name FROM {type_data_new} WHERE {type_data_new}_name = ?", (value_new,))
+    cursor.execute(f"SELECT {type_data_new}_name FROM {table_name} WHERE {type_data_new}_name = ?", (value_new,))
     # Если запись не существует, заменить старую на новую
     result = cursor.fetchone()
     if result is None:
-        cursor.execute(f"UPDATE {type_data_new} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
+        cursor.execute(f"UPDATE {table_name} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
         conn.commit()
         conn.close()
-    # else:
-    #      flash (f'{value_new} ', 'management-update-warning')
+
+def card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old):
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute(f"UPDATE {table_name_card_user} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
+    conn.commit()
+    conn.close()
 
 @app.route('/data/delete', methods=['DELETE', 'POST'])
 def delete():
@@ -351,7 +375,7 @@ def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
     # cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
@@ -393,7 +417,7 @@ def extract_management_fn():
         conn = sqlite3.connect(path_db)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM management")
+        cursor.execute("SELECT DISTINCT management_name FROM mgm_dep")
         management = cursor.fetchall()
         conn.close()
         return management
