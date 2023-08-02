@@ -6,7 +6,7 @@
 {%block search_form%}
 
 
-<div id="test" class="search ">
+<div id="test" class="search">
   <form id="search_tools" class="" >
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">  
@@ -71,7 +71,6 @@
             for (var i = 0; i < managementNames.length; i++) {
                 if (selectedValue === managementNames[i]) {
                     htmx.ajax("post", "card", {target: '#search_data', swap: 'outerHTML', event: 'click', values: {management: selectedValue}});
-                    
                     break;
                 }
             }
