@@ -12,9 +12,28 @@
      
 		</div>
 		<div class="modal-footer">
-      <button hx-get="/data" hx-target="#main" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+      <!-- <button hx-get="/data" hx-target="#main" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button> -->
+	  <button  type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeModal()">Отмена</button>
       <button hx-put="/data/update" hx-target="#main" hx-trigger="click"  hx-include="#modal-body" type="button" class="btn btn-primary">Сохранить</button>
 		</div>
 	  </div>
 	</div>
   </div>
+
+
+  <script>
+	function closeModal() {
+		var container = document.getElementById("search_modal")
+		var backdrop = document.getElementById("modal-backdrop")
+		var modal = document.getElementById("modal")
+	
+		modal.classList.remove("show")
+		backdrop.classList.remove("show")
+	
+		setTimeout(function() {
+			container.removeChild(backdrop)
+			container.removeChild(modal)
+		}, 200)
+	}
+	
+	</script>
