@@ -29,7 +29,6 @@ def dep_list():
     if request.method == 'POST':
         form = request.form
         dep_list_data = dep_list_fn(form)
-        print(dep_list_data)
         return render_template('dep_list.html', dep_list_data=dep_list_data)
     
 def dep_list_fn(form):
@@ -80,13 +79,6 @@ def extract_user_data_search_fn(value, data_type):
         cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE {data_type}_name = ?", (value,))
         result = cursor.fetchall()
         return result
-             
-    
-    # if 'department' in form_keys:
-    #     department = form_data['department']
-    #     cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE department_name = ?", (department,))
-    #     result = cursor.fetchall()
-    #     return result
 
 @app.route('/card_user', methods=['GET', 'POST'])
 def card_user():
@@ -280,17 +272,24 @@ def extract_job_data_modal_fn(form):
         value = result[0]
         conn.close()
         return value
-    
+
 @app.route('/data/user_edit_modal', methods=['GET', 'POST'])
 def user_edit_modal():
     if request.method == 'POST':
         form = request.form
-        extract_user_name = extract_user_name_fn()
-        extract_user_data_modal = extract_user_data_modal_fn(form)
-        extract_management_data = extract_management_fn()
-        extract_department_data = extract_department_fn()
-        extract_job_data = extract_job_fn()
-        return render_template('user_edit_modal.html', extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_user_data_modal = extract_find_user_data_modal_fn(form)
+        return render_template('user_edit_modal.html', extract_user_data_modal=extract_user_data_modal)
+    
+def extract_find_user_data_modal_fn(form):
+    user_edit_id = request.form['user_edit_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_name FROM user WHERE id = ?", (user_edit_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        return value
 
 @app.route('/data/find_edit_modal', methods=['GET', 'POST'])
 def find_edit_modal():
@@ -357,7 +356,7 @@ def update():
         if 'user_old' in form_keys:
             value_old = form_data['user_old']
             update_data_fn(table_name,value_new,type_data_new,value_old)
-            # card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old) когда в дата будет исправление только имени пользователя
+            card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old) 
             return redirect(url_for('data'))
 
 def update_data_fn(table_name,value_new,type_data_new,value_old):
@@ -417,8 +416,6 @@ def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
-    # cursor.execute("CREATE TABLE IF NOT EXISTS management (id INTEGER PRIMARY KEY, management_name varchar(300) UNIQUE)")
-    # cursor.execute("CREATE TABLE IF NOT EXISTS department (id INTEGER PRIMARY KEY, department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
     conn.commit()
@@ -431,21 +428,10 @@ def add_data_fn(form):
     user = request.form['user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    # if management or department == '':
-    #     flash (f'{management} ', 'mgm_dep-nodata-info')
-        # return redirect(url_for('data')) 
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
-        # cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
         flash (f'{management} и {department}', 'mgm_dep-info')
-        # return redirect(url_for('data'))
-    
-    # if management != '':
-    #     cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
-    #     flash (f'{management} ', 'management-info')
-    # if department != '':
-    #     cursor.execute("INSERT OR REPLACE INTO department (department_name) VALUES (?)", (department,))
-    #     flash (f'{department} ', 'department-info')
+
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'job-info')
