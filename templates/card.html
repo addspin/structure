@@ -1,17 +1,19 @@
 
-<div id="search_data" class="search_data ">
-    <div class="d-flex gap-5">
+<div id="search_data" class="search_data">
+    <div id="" class="d-flex gap-5 smooth_fade">
         <div class="list-group"   id="">
        
         {% for value in extract_user_data_search %}
         {% if loop.index % 2 == 0 %} 
-        <label class="list-group-item list_items ">
-            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
             <span>
-            <h6>{{ value[3] }}</h6>
-            <small class="d-block text-muted">{{ value[2] }}
                 <hr class="um_service_hr">
-                <strong>URL или ip сервиса:</strong>  <a href="{{ value.service_url }}">{{ value[4] }}</a>
+            <h6>{{ value[3] }}</h6>
+            <small class="d-block text-muted">
+                <strong>Должность:</strong> {{ value[2] }}
+                <hr class="um_service_hr">
+                <strong>Примечание:</strong> {{ value[4] }}
                 <hr class="um_service_hr">
             </small>
             <hr class="um_service_hr">
@@ -24,13 +26,15 @@
             
             {% for value in extract_user_data_search %}
             {% if loop.index % 2 == 1 %}
-            <label class="list-group-item list_items ">
-            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
+            <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}">
             <span>
-                <h6>{{ value[3] }}</h6>
-                <small class="d-block text-muted">{{ value[2] }}
+                <strong></strong><h6>{{ value[3] }}</h6>
+                <small class="d-block text-muted">
                 <hr class="um_service_hr">
-                <strong>URL или ip сервиса:</strong>  <a href="{{ value.service_url }}">{{ value[4] }}</a>
+                <strong>Должность:</strong> {{ value[2] }}
+                <hr class="um_service_hr">
+                <strong>Примечание:</strong>{{ value[4] }}
                 <hr class="um_service_hr">
                 </small>
                 <hr class="um_service_hr">
@@ -41,3 +45,4 @@
         </div>
     </div>
 </div>
+

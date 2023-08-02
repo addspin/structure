@@ -129,9 +129,40 @@ def card_user_update():
 
     if request.method == 'POST':
         form = request.form
-        photo_name = ''
+        photo_name = 'no_photo.png'
         add_card_user_fn(form, photo_name)
-        return redirect(url_for('data'))    
+        return redirect(url_for('data'))
+    
+@app.route('/find/update', methods=['GET', 'POST'])
+def find_update():    
+    if request.method == 'POST' and 'photo' in request.files:
+        form = request.form
+        photo = request.files['photo']
+        photo_name = secure_filename(photo.filename)
+        file_path = 'static/uploads/photos/' + photo_name
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        photos.save(request.files['photo'])
+        add_card_user_fn(form, photo_name)
+        return redirect(url_for('search'))
+
+    if request.method == 'POST':
+        form = request.form
+        # photo_name = 'no_photo.png'
+        photo_name = extract_photo_name_fn(form)
+        add_card_user_fn(form, photo_name)
+        return redirect(url_for('search'))    
+
+def extract_photo_name_fn(form):
+    user = request.form['user']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT photo_name FROM card_user WHERE user_name = ?", (user,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        return value
     
 def add_card_user_fn(form, photo_name):
     management = request.form['management']
@@ -260,7 +291,18 @@ def user_edit_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         return render_template('user_edit_modal.html', extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
-    
+
+@app.route('/data/find_edit_modal', methods=['GET', 'POST'])
+def find_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_user_name = extract_user_name_fn()
+        extract_user_data_modal = extract_user_data_modal_fn(form)
+        extract_management_data = extract_management_fn()
+        extract_department_data = extract_department_fn()
+        extract_job_data = extract_job_fn()
+        return render_template('find_edit_modal.html', extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
     conn = sqlite3.connect(path_db)
@@ -394,7 +436,7 @@ def add_data_fn(form):
         # return redirect(url_for('data')) 
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
-        cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
+        # cursor.execute("INSERT OR REPLACE INTO management (management_name) VALUES (?)", (management,))
         flash (f'{management} и {department}', 'mgm_dep-info')
         # return redirect(url_for('data'))
     

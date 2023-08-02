@@ -14,7 +14,7 @@
             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
           </svg>
       </span>
-        <select hx-post="/search/dep_list" hx-target="#department" class="form-select" id="management" name="management" onchange="handleSelectChange_mgm()">
+        <select hx-post="/search/dep_list" hx-target="#department" class="form-select " id="management" name="management"  onchange="handleSelectChange_mgm()">
           <option selected>Выберите Управление</option>
           {% for value in extract_management_data %}
           <option value="{{value.management_name}}">{{value.management_name}}</option>
@@ -40,17 +40,18 @@
           <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
         </svg>
         </span>
-        <input type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
+        <input id="search" type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
     </div>
   </form>
 </div>
 
-<div id="search_data" class="search_data">
-
-
-
+<div id="search_data" class="search_data" hx-trigger="load">
+  <div class="spinner">
+    <img  alt="Result loading..." class="htmx-indicator" width="50" src="{{ url_for('static', filename='svg/90-ring.svg') }}"/>
+  </div>
+ 
 </div>
-
+<div id="search_modal"></div>
 
 
 
@@ -70,6 +71,7 @@
             for (var i = 0; i < managementNames.length; i++) {
                 if (selectedValue === managementNames[i]) {
                     htmx.ajax("post", "card", {target: '#search_data', swap: 'outerHTML', event: 'click', values: {management: selectedValue}});
+                    
                     break;
                 }
             }
@@ -97,4 +99,5 @@
         }
 </script>
 
+<script src="{{ url_for('static', filename='/local_js/search_object.js') }}"></script>
 {%endblock%}
