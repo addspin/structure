@@ -252,8 +252,8 @@
             </div>
         <div id="modal_window_edit"></div>
     </div>
-</div>
-<div id="search_modal"></div>
+</div><div id="search_modal"></div>
+
 <script>
 function submit_data() {
     var selectElement_management = document.getElementById("management");
@@ -278,7 +278,7 @@ function submit_data() {
 
 
 <!-- Показываем модельное окно -->
-<script>
+<!-- <script>
 function closeModal() {
 	var container = document.getElementById("management_table")
 	var backdrop = document.getElementById("modal-backdrop")
@@ -292,7 +292,7 @@ function closeModal() {
 		container.removeChild(modal)
 	}, 200)
 }
-</script>
+</script> -->
 
 <script src="{{ url_for('static', filename='/local_js/search_data.js') }}"></script>
 

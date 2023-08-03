@@ -81,16 +81,22 @@
     opacity: 0;
   }
   .smooth_fade {
-   transition: opacity 400ms ease-in;
+   transition: opacity 200ms ease-in;
   }
   
+  .htmx-settling  .all_users {
+    opacity: 0;
+  }
+  .all_users {
+    transition: opacity 200ms ease-in;
+   }
 
-
-.spinner {
+/* .spinner {
     display: flex;
     justify-content: space-around;
     margin: 250px;
-  }
+  } */
+  
 .card_local {
     padding: 10px;
     --bs-card-spacer-y: 1rem;

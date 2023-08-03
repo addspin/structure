@@ -46,10 +46,55 @@
 </div>
 
 <div id="search_data" class="search_data" hx-trigger="load">
-  <div class="spinner">
+  <!-- <div class="spinner">
     <img  alt="Result loading..." class="htmx-indicator" width="50" src="{{ url_for('static', filename='svg/90-ring.svg') }}"/>
-  </div>
- 
+  </div> -->
+  <div id="all_users" class="all_users d-flex gap-5 smooth_fade"  style="margin-top: 15px; overflow-y: auto; height: 60vh;">
+    <div class="list-group"   id="">
+   
+    {% for value in extract_all_user %}
+    {% if loop.index % 2 == 0 %} 
+    <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
+        <span>
+            <hr class="um_service_hr">
+        <h6>{{ value[3] }}</h6>
+        <small class="d-block text-muted">
+            <strong>Должность:</strong> {{ value[2] }}
+            <hr class="um_service_hr">
+            <strong>Примечание:</strong> {{ value[4] }}
+            <hr class="um_service_hr">
+        </small>
+        <hr class="um_service_hr">
+        </span> 
+    </label>
+    {% endif %}
+    {% endfor %}
+    </div>
+    <div class="list-group"  id="">
+        
+        {% for value in extract_all_user %}
+        {% if loop.index % 2 == 1 %}
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}">
+        <span>
+            <h6>{{ value[3] }}</h6>
+            <small class="d-block text-muted">
+            <hr class="um_service_hr">
+            <strong>Должность:</strong> {{ value[2] }}
+            <hr class="um_service_hr">
+            <strong>Примечание:</strong> {{ value[4] }}
+            <hr class="um_service_hr">
+            </small>
+            <hr class="um_service_hr">
+        </span> 
+        </label>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+
 </div>
 <div id="search_modal"></div>
 

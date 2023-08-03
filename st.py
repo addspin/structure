@@ -22,7 +22,18 @@ def search():
     create_table_data_fn()
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
-    return render_template('search.html', side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
+    extract_all_user = extract_all_user_fn()
+    return render_template('search.html', extract_all_user=extract_all_user, side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
+
+def extract_all_user_fn():
+    conn = sqlite3.connect(path_db)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM card_user ")
+    result = cursor.fetchall()
+    print(result)
+    return result
+
 
 @app.route ('/search/dep_list', methods=['GET', 'POST'])
 def dep_list():
