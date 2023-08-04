@@ -79,18 +79,24 @@
 
 .htmx-settling  .smooth_fade {
     opacity: 0;
-  }
-  .smooth_fade {
-   transition: opacity 200ms ease-in;
-  }
-  
-  .htmx-settling  .all_users {
-    opacity: 0;
-  }
-  .all_users {
+}
+.smooth_fade {
     transition: opacity 200ms ease-in;
-   }
+}
 
+    .htmx-settling  .all_users {
+opacity: 0;
+}
+.all_users {
+    transition: opacity 200ms ease-in;
+}
+
+.count {
+    display: flex;
+    justify-content: center;
+    margin-bottom: -4px;
+    margin-top: -12px;
+}
 /* .spinner {
     display: flex;
     justify-content: space-around;

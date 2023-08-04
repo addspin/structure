@@ -23,7 +23,8 @@ def search():
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_all_user = extract_all_user_fn()
-    return render_template('search.html', extract_all_user=extract_all_user, side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
+    extract_count = extract_count_fn()
+    return render_template('search.html', extract_count=extract_count, extract_all_user=extract_all_user, side_pos='active', extract_department_data=extract_department_data, extract_management_data=extract_management_data)
 
 def extract_all_user_fn():
     conn = sqlite3.connect(path_db)
@@ -60,17 +61,27 @@ def card():
         if 'management' in form_keys:
             value = form_data['management']
             data_type = 'management'
+            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_user_data_search=extract_user_data_search)
+            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
         if 'department' in form_keys:
             value = form_data['department']
             data_type = 'department'
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_user_data_search=extract_user_data_search)
+            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+
+def extract_count_mgm_dep_fn(data_type,value):
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ?", (value,))
+    result = cursor.fetchone()[0]
+    conn.close()
+    return result
 
 
 @app.route('/card_no_data', methods=['GET', 'POST'])
@@ -78,10 +89,8 @@ def card_no_data():
     return render_template('card_no_data.html')
 
 def extract_user_data_search_fn(value, data_type):
-   
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-   
     cursor.execute(f"SELECT user_name FROM card_user WHERE {data_type}_name = ?", (value,))
     result = cursor.fetchone()
     if result is None:
@@ -207,11 +216,11 @@ def create_table_card_user_fn():
 
 @app.route('/data', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def data():
-   
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
+    extract_count = extract_count_fn()
  
     if request.method == 'POST':
         form = request.form
@@ -220,8 +229,24 @@ def data():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_user_name_data = extract_user_name_fn()
-        return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
-    return render_template('data.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        extract_count = extract_count_fn()
+        return render_template('data.html', side_pos='active', extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    return render_template('data.html', side_pos='active', extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+
+def extract_count_fn():
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(DISTINCT management_name) FROM mgm_dep")
+    mgm = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(department_name) FROM mgm_dep")
+    dep = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(job_name) FROM job")
+    job = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(user_name) FROM user")
+    user = cursor.fetchone()[0]
+    conn.close()
+    print(mgm, dep, job, user)
+    return mgm, dep, job, user
 
 @app.route('/data/no_data', methods=['GET', 'POST'])
 def no_data():
