@@ -15,3 +15,5 @@
 5 - user_card_text
 6 - photo_name
 7 - type_name 
+
+extract_user_data_search_fn не экстрактит id
