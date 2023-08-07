@@ -446,10 +446,24 @@ def delete():
 def delete_data_fn(value,type_data):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute(f"DELETE FROM {type_data} WHERE {type_data}_name = ?", (value,))
-    flash (f'{value} ', f'{type_data}-remove-info')
-    conn.commit()
-    conn.close()
+    if type_data == 'user':
+        cursor.execute(f"DELETE FROM user WHERE user_name = ?", (value,))
+        cursor.execute(f"DELETE FROM card_user WHERE user_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()
+    if type_data == 'job':
+        cursor.execute(f"DELETE FROM job WHERE job_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()
+    if type_data == 'management':
+        cursor.execute(f"DELETE FROM mgm_dep WHERE management_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()
+    if type_data == 'department':
+        cursor.execute(f"DELETE FROM mgm_dep WHERE department_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()    
+
 
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
