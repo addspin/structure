@@ -9,7 +9,7 @@
 				<form hx-post="/find/update" hx-target="#main" hx-swap="innerHTML" hx-include="#card_user_form" id="card_user_form" class="needs-validation" enctype="multipart/form-data" action=""  novalidate>
 					<div class="row align-items-start">
 						{% for value in extract_user_data_modal %} 
-						<img class="img_upload" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" alt="Моя картинка">
+						<img class="img_upload" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
 						{% endfor %}
 						<div class="input-group md-3 col">
 							<span class="input-group-text" id="basic-addon1">Управление:</span>

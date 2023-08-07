@@ -98,6 +98,7 @@ def extract_user_data_search_fn(value, data_type):
     else:
         cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ?", (value,))
         result = cursor.fetchall()
+        print (result)
         return result
 
 @app.route('/card_user', methods=['GET', 'POST'])

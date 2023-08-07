@@ -6,3 +6,12 @@
     работает
     отпуск по беременности
     больничный
+
+0 -id
+1 - management_name 
+2 - department_name
+3 - job_name
+4 - user_name 
+5 - user_card_text
+6 - photo_name
+7 - type_name 
