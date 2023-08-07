@@ -12,7 +12,7 @@
         <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
             <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
             <span>
-                <hr class="um_service_hr">
+                <!-- <hr class="um_service_hr"> -->
             <h6>{{ value[3] }}</h6>
             <small class="d-block text-muted">
                 <strong>Должность:</strong> {{ value[2] }}

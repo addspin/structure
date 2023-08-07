@@ -106,6 +106,7 @@ def card_user():
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
+    extract_type_user = extract_type_user_fn()
     
     if request.method == 'POST' and 'photo' in request.files:
         form = request.form
@@ -116,15 +117,15 @@ def card_user():
             os.remove(file_path)
         photos.save(request.files['photo'])
         add_card_user_fn(form, photo_name)
-        return render_template('card_user.html',  side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        return render_template('card_user.html',  side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
     if request.method == 'POST':
         form = request.form
         photo_name = 'no_photo.png'
         add_card_user_fn(form, photo_name)
-        return render_template('card_user.html', side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        return render_template('card_user.html', side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
-    return render_template('card_user.html',  side_pos='active', extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    return render_template('card_user.html',  side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
 @app.route('/card_user/update', methods=['GET', 'POST'])
 def card_user_update():    
@@ -182,6 +183,7 @@ def add_card_user_fn(form, photo_name):
     job = request.form['job']
     user = request.form['user']
     user_card_text = request.form['user_card_text']
+    type_user = request.form['type_user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -210,7 +212,7 @@ def add_card_user_fn(form, photo_name):
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text, photo_name varchar(300))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text, photo_name varchar(300), type_user varchar(300))")
     conn.commit()
     conn.close()
 
@@ -451,6 +453,9 @@ def delete_data_fn(value,type_data):
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
+    type = [('Отпуск по беременности и родам',), ('Больничный',), ('Работает',)]
+    cursor.execute("CREATE TABLE IF NOT EXISTS type_user (id INTEGER PRIMARY KEY, type_name varchar(300) UNIQUE)")
+    cursor.executemany('INSERT OR IGNORE INTO type_user (type_name) VALUES (?)', type)
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
@@ -510,6 +515,15 @@ def extract_user_name_fn():
         user = cursor.fetchall()
         conn.close()
         return user
+
+def extract_type_user_fn():
+        conn = sqlite3.connect(path_db)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM type_user")
+        type_user = cursor.fetchall()
+        conn.close()
+        return type_user
 
 @app.route('/export', methods=['GET', 'POST'])
 def export():
