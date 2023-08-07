@@ -59,14 +59,16 @@
     {% for value in extract_all_user %}
     {% if loop.index % 2 == 0 %} 
     <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
-        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
+        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
         <span>
             <hr class="um_service_hr">
-        <h6>{{ value[3] }}</h6>
+        <h6>{{ value[4] }}</h6>
         <small class="d-block text-muted">
-            <strong>Должность:</strong> {{ value[2] }}
+            <strong>Должность:</strong> {{ value[3] }}
             <hr class="um_service_hr">
-            <strong>Примечание:</strong> {{ value[4] }}
+            <strong>Примечание:</strong> {{ value[5] }}
+            <hr class="um_service_hr">
+            <strong>Статус:</strong> {{ value[7] }}
             <hr class="um_service_hr">
         </small>
         <hr class="um_service_hr">
@@ -80,14 +82,16 @@
         {% for value in extract_all_user %}
         {% if loop.index % 2 == 1 %}
         <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
-        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}">
+        <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}">
         <span>
-            <h6>{{ value[3] }}</h6>
+            <h6>{{ value[4] }}</h6>
             <small class="d-block text-muted">
             <hr class="um_service_hr">
-            <strong>Должность:</strong> {{ value[2] }}
+            <strong>Должность:</strong> {{ value[3] }}
             <hr class="um_service_hr">
-            <strong>Примечание:</strong> {{ value[4] }}
+            <strong>Примечание:</strong> {{ value[5] }}
+            <hr class="um_service_hr">
+            <strong>Статус:</strong> {{ value[7] }}
             <hr class="um_service_hr">
             </small>
             <hr class="um_service_hr">

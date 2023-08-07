@@ -96,7 +96,7 @@ def extract_user_data_search_fn(value, data_type):
     if result is None:
         return result
     else:
-        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE {data_type}_name = ?", (value,))
+        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ?", (value,))
         result = cursor.fetchall()
         return result
 
@@ -201,10 +201,10 @@ def add_card_user_fn(form, photo_name):
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name) VALUES (?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name))
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
         flash (f'{user} ', 'user_card_add-info')
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, user))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
         flash (f'{user} ', 'user_card_update-info')
     conn.commit()
     conn.close()
@@ -212,7 +212,7 @@ def add_card_user_fn(form, photo_name):
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300) PRIMARY KEY, user_card_text text, photo_name varchar(300), type_user varchar(300))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text, photo_name varchar(300), type_name varchar(300))")
     conn.commit()
     conn.close()
 
