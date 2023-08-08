@@ -1,6 +1,9 @@
+/* body {
+    background-color: #a27373;
+} */
 .lvl0 {
     width: auto;
-    height: 100vh;
+    height: fit-content;
     background: rgba(243, 243, 248, 0.31);
     display: flex;
     justify-content: center;
@@ -9,9 +12,10 @@
 
 .lvl1 {
     width: auto;
-    height: auto;
+    height: fit-content;
     flex-shrink: 0;
     background: #F3F3F8;
+    border-radius: 5px;
 }
 
 .menu {
@@ -21,6 +25,13 @@
     background: #FFF;
     box-shadow: 0px 14px 15px -9px rgba(0, 0, 0, 0.10);
     padding-left: 50px;
+    padding-right: 60px;
+}
+
+.d-flex_local {
+    display: flex!important;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .search {
@@ -32,6 +43,7 @@
     background: #FFF;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
     margin-top: 21px;
+    margin-bottom: 21px;
     margin-left: auto;
     margin-right: auto;
     padding: 20px;
@@ -39,15 +51,17 @@
 
 .search_data {
     width: 1200px;
-    height: 170px;
+    height: auto;
     flex-shrink: 0;
     display: table;
     border-radius: 5px;
     background: #FFF;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
     margin-top: 21px;
+    margin-bottom: 21px;
     margin-left: auto;
     margin-right: auto;
+    
     padding: 20px;
 }
 

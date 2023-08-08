@@ -34,7 +34,7 @@
           {% endfor %}
         </select>
       </div>
-    <div class="input-group">
+    <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
           <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -42,6 +42,28 @@
         </span>
         <input id="search" type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
     </div>
+    <div style="padding: 0px;" class="message_data">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+              {% if category == 'user_card_add-info' %}
+                  {% set alert_class = 'alert-success' %}
+                  <div class="alert {{alert_class}} fade show" role="alert">
+                      <strong>{{ message }}</strong> - запись добавлена!
+                  </div>
+              {% elif category == 'user_card_update-info' %}
+                  {% set alert_class = 'alert-success' %}
+                  <div class="alert {{alert_class}} fade show" role="alert">
+                      <strong>{{ message }}</strong> - запись обновлена!
+                  </div>
+              {% elif category == 'user_card_nodata-info' %}
+                  {% set alert_class = 'alert-warning' %}
+                  <div class="alert {{alert_class}} fade show" role="alert">
+                       <strong>Поля небыли должным образом заполнены!</strong>
+                  </div>
+              {% endif %}
+          {% endfor %}
+      {% endwith %}
+      </div>
   </form>
 </div>
 
@@ -68,7 +90,7 @@
             <hr class="um_service_hr">
             <strong>Примечание:</strong> {{ value[5] }}
             <hr class="um_service_hr">
-            <strong>Статус:</strong> {{ value[7] }}
+            <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
             <hr class="um_service_hr">
         </small>
         <hr class="um_service_hr">
@@ -91,7 +113,7 @@
             <hr class="um_service_hr">
             <strong>Примечание:</strong> {{ value[5] }}
             <hr class="um_service_hr">
-            <strong>Статус:</strong> {{ value[7] }}
+            <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
             <hr class="um_service_hr">
             </small>
             <hr class="um_service_hr">

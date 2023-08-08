@@ -155,14 +155,16 @@ def find_update():
         if os.path.exists(file_path):
             os.remove(file_path)
         photos.save(request.files['photo'])
-        add_card_user_fn(form, photo_name)
+        # add_card_user_fn(form, photo_name)
+        update_find_user_fn(form, photo_name)
         return redirect(url_for('search'))
 
     if request.method == 'POST':
         form = request.form
         # photo_name = 'no_photo.png'
         photo_name = extract_photo_name_fn(form)
-        add_card_user_fn(form, photo_name)
+        # add_card_user_fn(form, photo_name)
+        update_find_user_fn(form, photo_name)
         return redirect(url_for('search'))    
 
 def extract_photo_name_fn(form):
@@ -177,6 +179,38 @@ def extract_photo_name_fn(form):
         return value
     
 def add_card_user_fn(form, photo_name):
+    management = request.form['management']
+    department = request.form['department']
+    job = request.form['job']
+    user = request.form['user']
+    user_card_text = request.form['user_card_text']
+    type_user = request.form['type_user']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    if management == '':
+        flash (f'{management} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if department == '':
+        flash (f'{department} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if job == '':
+        flash (f'{job} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    if user == '':
+        flash (f'{user} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
+    cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
+    result = cursor.fetchone()
+    if result is None:
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        flash (f'{user} ', 'user_card_add-info')
+    else:
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
+        flash (f'{user} ', 'user_card_update-info')
+    conn.commit()
+    conn.close()
+
+def update_find_user_fn(form, photo_name):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
@@ -251,6 +285,9 @@ def extract_count_fn():
 @app.route('/data/no_data', methods=['GET', 'POST'])
 def no_data():
     no_data = request.form['no_data']
+    if no_data == 'card_user':
+        flash(f'{no_data} ', 'user_card_nodata-info')
+        return redirect(url_for('card_user'))
     if no_data == '':
         flash(f'{no_data} ', 'mgm_dep-nodata-info')
     return redirect(url_for('data'))

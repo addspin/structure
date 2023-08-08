@@ -12,7 +12,7 @@
         <div class="input-group mb-3"></div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <input class="form-control" list="datalistOptions" id="management" name="management" placeholder="Название управления или другой корневой структурной единицы" >
+            <input class="form-control" list="datalistOptions" id="management" name="management" placeholder="Название управления или другой корневой структурной единицы" required>
             <datalist id="datalistOptions" >
                 {% for value in extract_management_data %}
                 <option value="{{value.management_name}}">
