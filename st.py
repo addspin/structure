@@ -32,7 +32,6 @@ def extract_all_user_fn():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM card_user ")
     result = cursor.fetchall()
-    print(result)
     return result
 
 
@@ -98,7 +97,6 @@ def extract_user_data_search_fn(value, data_type):
     else:
         cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ?", (value,))
         result = cursor.fetchall()
-        print (result)
         return result
 
 @app.route('/card_user', methods=['GET', 'POST'])
@@ -248,7 +246,6 @@ def extract_count_fn():
     cursor.execute("SELECT COUNT(user_name) FROM user")
     user = cursor.fetchone()[0]
     conn.close()
-    print(mgm, dep, job, user)
     return mgm, dep, job, user
 
 @app.route('/data/no_data', methods=['GET', 'POST'])
@@ -348,7 +345,6 @@ def extract_user_data_modal_fn(form):
     cursor = conn.cursor()
     cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
     result = cursor.fetchall()
-    print(result)
     return result
 
 @app.route('/data/update', methods=['PUT'])
