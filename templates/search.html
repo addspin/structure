@@ -58,7 +58,7 @@
    
     {% for value in extract_all_user %}
     {% if loop.index % 2 == 0 %} 
-    <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+    <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}"'>
         <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
         <span>
             <hr class="um_service_hr">
@@ -81,7 +81,7 @@
         
         {% for value in extract_all_user %}
         {% if loop.index % 2 == 1 %}
-        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}"'>
         <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}">
         <span>
             <h6>{{ value[4] }}</h6>

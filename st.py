@@ -339,14 +339,16 @@ def find_edit_modal():
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
-        return render_template('find_edit_modal.html', extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_type_user = extract_type_user_fn()
+        return render_template('find_edit_modal.html', extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name FROM card_user WHERE user_name = ?", (user_edit_name,))
+    cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
     result = cursor.fetchall()
+    print(result)
     return result
 
 @app.route('/data/update', methods=['PUT'])
@@ -456,13 +458,27 @@ def delete_data_fn(value,type_data):
         flash (f'{value} ', f'{type_data}-remove-info')
         conn.commit()
     if type_data == 'management':
-        cursor.execute(f"DELETE FROM mgm_dep WHERE management_name = ?", (value,))
-        flash (f'{value} ', f'{type_data}-remove-info')
-        conn.commit()
+        # если в управлении не осталось ни одного пользователя, удаляем управление
+        cursor.execute(f"SELECT management_name FROM card_user WHERE management_name = ?", (value,))
+        result = cursor.fetchone()
+        if result is None:
+            cursor.execute(f"DELETE FROM mgm_dep WHERE management_name = ?", (value,))
+            flash (f'{value} ', f'{type_data}-remove-info')
+            conn.commit()
+        else:
+            flash (f'{value} ', f'{type_data}-noremove-info')
+
     if type_data == 'department':
-        cursor.execute(f"DELETE FROM mgm_dep WHERE department_name = ?", (value,))
-        flash (f'{value} ', f'{type_data}-remove-info')
-        conn.commit()    
+        # если в отделе не осталось ни одного пользователя, удаляем отдел
+        cursor.execute(f"SELECT department_name FROM card_user WHERE department_name = ?", (value,))
+        result = cursor.fetchone()
+        if result is None:
+            cursor.execute(f"DELETE FROM mgm_dep WHERE department_name = ?", (value,))
+            flash (f'{value} ', f'{type_data}-remove-info')
+            conn.commit()
+        else:
+            flash (f'{value} ', f'{type_data}-noremove-info')
+    conn.close()
 
 
 def create_table_data_fn():

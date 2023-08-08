@@ -84,6 +84,16 @@
                 <div class="alert {{alert_class}} fade show" role="alert">
                     <strong>{{ message }}</strong> - запись удалена!
                 </div>
+            {% elif category == 'department-noremove-info' %}
+                {% set alert_class = 'alert-warning' %}
+                <div class="alert {{alert_class}} fade show" role="alert">
+                    <strong>{{ message }}</strong> - объект содержит пользователей, поэтому запись не удалена!
+                </div>
+            {% elif category == 'management-noremove-info' %}
+                {% set alert_class = 'alert-warning' %}
+                <div class="alert {{alert_class}} fade show" role="alert">
+                    <strong>{{ message }}</strong> - объект содержит пользователей, поэтому запись не удалена!
+                </div>
             {% elif category == 'job-remove-info' %}
                 {% set alert_class = 'alert-success' %}
                 <div class="alert {{alert_class}} fade show" role="alert">
