@@ -73,9 +73,9 @@
     <img  alt="Result loading..." class="htmx-indicator" width="50" src="{{ url_for('static', filename='svg/90-ring.svg') }}"/>
   </div> -->
   <!-- Выводить список в 2 колонки -->
-  <!-- <div id="all_users" class="all_users d-flex gap-5 smooth_fade"  style="margin-top: 15px; overflow-y: auto; height: 60vh;"> -->
+  <!-- <div id="all_users" class="all_users d-flex gap-5 smooth_fade"> -->
   <!-- Выводить список в 1 колонку -->
-  <div id="all_users" class="all_users  gap-5 smooth_fade"  style="margin-top: 15px; overflow-y: auto; height: auto;">
+  <div id="all_users" class="all_users  gap-5 smooth_fade"  >
     <div class="list-group"   id="">
    
     {% for value in extract_all_user %}

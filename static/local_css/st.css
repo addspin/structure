@@ -1,10 +1,10 @@
-/* body {
-    background-color: #a27373;
-} */
-.lvl0 {
-    width: auto;
-    height: fit-content;
+body {
     background: rgba(243, 243, 248, 0.31);
+}
+.lvl0 {
+    /* width: auto;
+    height: fit-content; */
+    /* background: rgba(243, 243, 248, 0.31); */
     display: flex;
     justify-content: center;
 
@@ -16,6 +16,7 @@
     flex-shrink: 0;
     background: #F3F3F8;
     border-radius: 5px;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.10);
 }
 
 .menu {
@@ -103,6 +104,9 @@ opacity: 0;
 }
 .all_users {
     transition: opacity 200ms ease-in;
+    margin-top: 15px;
+    overflow-y: auto;
+    height: 580px;
 }
 
 .count {
