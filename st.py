@@ -3,6 +3,8 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from werkzeug.utils import secure_filename
 import sqlite3
 import os
+import ssl
+from flask_mail import Mail, Message
 
 
 
@@ -10,11 +12,26 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'some random string'
 path_db = 'db/st.db'
 
+app.config.from_pyfile('mail_config.py')
+
+context = ssl.create_default_context()
+context.check_hostname = False
+context.verify_mode = ssl.CERT_NONE
+
+mail = Mail(app)
+
+
 # Конфигурация загрузки файлов
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads/photos'  # Папка для сохранения загруженных фотографий
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
+def send_email():
+    with app.app_context():
+        msg = Message('Subject', sender='tdv@udmurt.ru', recipients=['tdv@udmurt.ru'])
+        msg.body = 'This is TEST mmail'
+        mail.send(msg)
+       
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
@@ -542,6 +559,7 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
+        send_email()
     conn.commit()
     conn.close()
 
