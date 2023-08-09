@@ -5,7 +5,8 @@ import sqlite3
 import os
 import ssl
 from flask_mail import Mail, Message
-import asyncio
+# import asyncio
+from celery import Celery
 # from aiosmtplib import SMTP
 
 
@@ -14,25 +15,26 @@ app.config['SECRET_KEY'] = 'some random string'
 path_db = 'db/st.db'
 
 app.config.from_pyfile('mail_config.py')
-
 context = ssl.create_default_context()
 context.check_hostname = False
 context.verify_mode = ssl.CERT_NONE
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# celery = Celery('task', broker='redis://localhost:6379/0')
+client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+client.conf.update(app.config)
 
 mail = Mail(app)
-
+@Celery.task
+def send_email():
+    with app.app_context():
+        msg = Message('Subject', sender='tdv@udmurt.ru', recipients=['tdv@udmurt.ru'])
+        msg.body = 'This is TEST mmail'
+        mail.send(msg)
 
 # Конфигурация загрузки файлов
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads/photos'  # Папка для сохранения загруженных фотографий
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
-
-async def send_email():
-    with app.app_context():
-        msg = Message('Subject', sender='tdv@udmurt.ru', recipients=['tdv@udmurt.ru'])
-        msg.body = 'This is TEST mmail'
-        await mail.send(msg)
-       
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
@@ -267,7 +269,7 @@ def create_table_card_user_fn():
     conn.close()
 
 @app.route('/data', methods=['GET', 'POST', 'PUT', 'DELETE'])
-async def data():
+def data():
     extract_management_data = extract_management_fn()
     extract_department_data = extract_department_fn()
     extract_job_data = extract_job_fn()
@@ -276,7 +278,7 @@ async def data():
  
     if request.method == 'POST':
         form = request.form
-        await add_data_fn(form)
+        add_data_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
@@ -543,7 +545,7 @@ def create_table_data_fn():
     conn.commit()
     conn.close()
 
-async def add_data_fn(form):
+def add_data_fn(form):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
@@ -560,7 +562,7 @@ async def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        await send_email()
+        send_email()
     conn.commit()
     conn.close()
 
