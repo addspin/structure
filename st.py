@@ -6,7 +6,7 @@ import os
 import ssl
 from flask_mail import Mail, Message
 import asyncio
-from aiosmtplib import SMTP
+# from aiosmtplib import SMTP
 
 
 app = Flask(__name__)
@@ -543,7 +543,7 @@ def create_table_data_fn():
     conn.commit()
     conn.close()
 
-async def add_data_fn(form):
+def add_data_fn(form):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
@@ -560,7 +560,7 @@ async def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        await send_email()
+        asyncio.create_task(send_email())
     conn.commit()
     conn.close()
 
