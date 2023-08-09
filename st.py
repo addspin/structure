@@ -276,7 +276,7 @@ async def data():
  
     if request.method == 'POST':
         form = request.form
-        add_data_fn(form)
+        await add_data_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
