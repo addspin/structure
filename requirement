@@ -1,2 +1,4 @@
 flask
 Flask-Reuploaded
+Celery
+Flask_mail
