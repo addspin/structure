@@ -560,7 +560,7 @@ async def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        asyncio.create_task(send_email())
+        await send_email()
     conn.commit()
     conn.close()
 
