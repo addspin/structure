@@ -543,7 +543,7 @@ def create_table_data_fn():
     conn.commit()
     conn.close()
 
-def add_data_fn(form):
+async def add_data_fn(form):
     management = request.form['management']
     department = request.form['department']
     job = request.form['job']
