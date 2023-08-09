@@ -34,7 +34,6 @@ def extract_all_user_fn():
     result = cursor.fetchall()
     return result
 
-
 @app.route ('/search/dep_list', methods=['GET', 'POST'])
 def dep_list():
     if request.method == 'POST':

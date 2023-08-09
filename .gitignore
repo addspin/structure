@@ -1,3 +1,5 @@
 db/
 static/uploads/photos/*
 !static/uploads/photos/no_photo.png
+__pycache__/
+wsgi.py
