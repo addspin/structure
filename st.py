@@ -5,6 +5,7 @@ import sqlite3
 import os
 import ssl
 from flask_mail import Mail, Message
+import asyncio
 
 
 
@@ -26,7 +27,7 @@ app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads/photos'  # Папка дл�
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
-def send_email():
+async def send_email():
     with app.app_context():
         msg = Message('Subject', sender='tdv@udmurt.ru', recipients=['tdv@udmurt.ru'])
         msg.body = 'This is TEST mmail'
@@ -559,7 +560,7 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        send_email()
+        asyncio.run(send_email())
     conn.commit()
     conn.close()
 
