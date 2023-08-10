@@ -7,7 +7,7 @@ import ssl
 from flask_mail import Mail, Message
 # import asyncio
 from celery import Celery
-from celery_worker import client
+# from celery_worker import client
 # from aiosmtplib import SMTP
 
 
@@ -21,15 +21,14 @@ context = ssl.create_default_context()
 context.check_hostname = False
 context.verify_mode = ssl.CERT_NONE
 
-# celery = Celery('task', broker='redis://localhost:6379/0')
-# client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-# client.conf.update(app.config)
+
+celery_task = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 
 mail = Mail(app)
-@client.task
+@celery_task.task
 def send_email():
     with app.app_context():
-        msg = Message('Subject', sender='tdv@udmurt.ru', recipients=['tdv@udmurt.ru'])
+        msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
         msg.body = 'This is TEST mmail'
         mail.send(msg)
 
