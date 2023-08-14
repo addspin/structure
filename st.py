@@ -553,7 +553,7 @@ def add_data_fn(form):
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
         flash (f'{management} и {department}', 'mgm_dep-info')
-        body = f'Добавлено управление: <strong>{management}</strong>\n Добавлен отдел: <strong>{department}</strong>'
+        body = f'Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
         send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
@@ -563,7 +563,7 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        body = f'Добавлен новый пользователь: \n<strong>{user}</strong>'
+        body = f'Добавлен новый пользователь: <strong>{user}</strong>'
         send_email.delay(body)
     conn.commit()
     conn.close()
