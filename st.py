@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 import ssl
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from celery import Celery
 
 
@@ -12,7 +12,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'some random string'
 path_db = 'db/st.db'
 
-# app.config.from_pyfile('mail_config.py')
 app.config.from_object('config')
 context = ssl.create_default_context()
 context.check_hostname = False
@@ -554,17 +553,17 @@ def add_data_fn(form):
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
         flash (f'{management} и {department}', 'mgm_dep-info')
-        body = f'Добавлено новое управление - {management} и новый отдел: {department}'
+        body = f'Добавлено управление: <strong>{management}</strong>\n Добавлен отдел: <strong>{department}</strong>'
         send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'job-info')
-        body = f'Добавлена новая должность: {job}'
+        body = f'Добавлена новая должность: <strong>{job}</strong>'
         send_email.delay(body)
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        body = f'Добавлен новый пользователь: \n{user}'
+        body = f'Добавлен новый пользователь: \n<strong>{user}</strong>'
         send_email.delay(body)
     conn.commit()
     conn.close()
