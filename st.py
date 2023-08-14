@@ -4,11 +4,8 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 import ssl
-from flask_mail import Mail, Message
-# import asyncio
+from flask_mail import Mail
 from celery import Celery
-# from celery_worker import client
-# from aiosmtplib import SMTP
 
 
 app = Flask(__name__)
@@ -28,11 +25,9 @@ client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 mail = Mail(app)
 @client.task
 def send_email(body):
-    # for n in range(100):
-    #     print('sdfsdfsdfsdf')
     with app.app_context():
-        msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
-        msg.body = body
+        msg = Message(subject=app.config['SUBJECT'], sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
+        msg.html = body
         mail.send(msg)
 
 # Конфигурация загрузки файлов
@@ -559,15 +554,18 @@ def add_data_fn(form):
     if management and department != '':
         cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
         flash (f'{management} и {department}', 'mgm_dep-info')
-
+        body = f'Добавлено новое управление - {management} и новый отдел: {department}'
+        send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'job-info')
+        body = f'Добавлена новая должность: {job}'
+        send_email.delay(body)
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        body = 'test'
-        send_email.delay('asdasd')
+        body = f'Добавлен новый пользователь: \n{user}'
+        send_email.delay(body)
     conn.commit()
     conn.close()
 
