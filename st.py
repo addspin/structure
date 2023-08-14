@@ -27,12 +27,12 @@ client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 
 mail = Mail(app)
 @client.task
-def send_email(body_mail):
+def send_email(body):
     # for n in range(100):
     #     print('sdfsdfsdfsdf')
     with app.app_context():
         msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
-        msg.body = body_mail
+        msg.body = body
         mail.send(msg)
 
 # Конфигурация загрузки файлов
@@ -566,8 +566,8 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        body_mail = 'test'
-        send_email.delay('fasdfasdf')
+        body = 'test'
+        send_email.delay('asdasd')
     conn.commit()
     conn.close()
 
