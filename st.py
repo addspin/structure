@@ -27,11 +27,11 @@ client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 
 mail = Mail(app)
 @client.task
-def send_email():
+def send_email(msg):
     # for n in range(100):
     #     print('sdfsdfsdfsdf')
     with app.app_context():
-        msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
+        # msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
         msg.body = 'This is TEST mmail'
         mail.send(msg)
 
@@ -566,7 +566,8 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        send_email.apply_async()
+        msg = Message('test', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
+        send_email.apply_async(args=[msg])
     conn.commit()
     conn.close()
 
