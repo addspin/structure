@@ -22,11 +22,14 @@ context.check_hostname = False
 context.verify_mode = ssl.CERT_NONE
 
 
-celery_task = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# client.conf.update(app.config)
 
 mail = Mail(app)
-@celery_task.task
+@client.task
 def send_email():
+    # for n in range(100):
+    #     print('sdfsdfsdfsdf')
     with app.app_context():
         msg = Message('Subject', sender=app.config['SENDER'], recipients=app.config['RECIPIENTS'])
         msg.body = 'This is TEST mmail'
@@ -563,7 +566,7 @@ def add_data_fn(form):
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
         flash (f'{user} ', 'user-info')
-        send_email()
+        send_email.apply_async()
     conn.commit()
     conn.close()
 
