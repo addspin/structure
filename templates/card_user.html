@@ -106,23 +106,4 @@
     </div>
 </div>
 
-<!-- <script>
-    function submit_data() {
-        var selectElement_management = document.getElementById("management");
-        var selectElement_department = document.getElementById("department");
-        var selectElement_job = document.getElementById("job");
-        var selectElement_user = document.getElementById("user");
-        var values_form = htmx.values(htmx.find("#card_user_form"));
-        var form = document.getElementById('card_user_form');
-        var formData = new FormData(form);
-        if ( selectElement_job.value == "" && selectElement_user.value == "" && selectElement_department.value == "" && selectElement_management.value == "") {
-            htmx.ajax("post", "/data/no_data", {target: '#main', swap: 'outerHTML', event: 'click', values: {no_data: "card_user"}});
-        }
-        if ( selectElement_department.value !== "" && selectElement_management.value !== "" && selectElement_job.value !== "" && selectElement_user.value !== "") {
-            htmx.ajax("post", "card_user", {target: '#main', swap: 'outerHTML', event: 'click', values: values_form});
-        }
-
-    }
-    </script> -->
-
 {%endblock%}

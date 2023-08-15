@@ -503,10 +503,14 @@ def delete_data_fn(value,type_data):
         cursor.execute(f"DELETE FROM card_user WHERE user_name = ?", (value,))
         flash (f'{value} ', f'{type_data}-remove-info')
         conn.commit()
+        body = f'Пользователь <strong>{value}</strong> удален'
+        send_email.delay(body)
     if type_data == 'job':
         cursor.execute(f"DELETE FROM job WHERE job_name = ?", (value,))
         flash (f'{value} ', f'{type_data}-remove-info')
         conn.commit()
+        body = f'Должность <strong>{value}</strong> удалена'
+        send_email.delay(body)
     if type_data == 'management':
         # если в управлении не осталось ни одного пользователя, удаляем управление
         cursor.execute(f"SELECT management_name FROM card_user WHERE management_name = ?", (value,))
@@ -515,6 +519,8 @@ def delete_data_fn(value,type_data):
             cursor.execute(f"DELETE FROM mgm_dep WHERE management_name = ?", (value,))
             flash (f'{value} ', f'{type_data}-remove-info')
             conn.commit()
+            body = f'Управление <strong>{value}</strong> удалено'
+            send_email.delay(body)
         else:
             flash (f'{value} ', f'{type_data}-noremove-info')
 
