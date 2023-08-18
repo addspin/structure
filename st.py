@@ -286,7 +286,7 @@ def update_find_user_fn(form, photo_name):
                 <strong>Отдел:</strong> {old_department}<br>
                 <strong>Должность:</strong> {old_job}<br>
                 <strong>Примечание:</strong> {old_user_card_text}<br>
-                <strong>Статус:</strong> {old_type_user}<br><br><br><br>
+                <strong>Статус:</strong> {old_type_user}<br><br>
 
                 <h5>Новая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {user}<br>
@@ -622,10 +622,18 @@ def add_data_fn(form):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management and department != '':
-        cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
-        flash (f'{management} и {department}', 'mgm_dep-info')
-        body = f'Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
-        send_email.delay(body)
+        cursor.execute(f"SELECT management_name FROM mgm_dep WHERE management_name = ?", (management,))
+        result = cursor.fetchone()
+        if result is None:
+            cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+            flash (f'{management} и {department}', 'mgm_dep-info')
+            body = f'Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
+            send_email.delay(body)
+        if result is not None:
+            cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+            flash (f'{department}', 'mgm_dep-info')
+            body = f'В управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
+            send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'job-info')
