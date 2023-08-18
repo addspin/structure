@@ -1,5 +1,6 @@
 body {
-    background: rgba(243, 243, 248, 0.31);
+    /* background: rgba(243, 243, 248, 0.31); */
+    background: rgb(177 177 179 / 31%);
 }
 .lvl0 {
     /* width: auto;
