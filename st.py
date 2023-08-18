@@ -221,9 +221,25 @@ def add_card_user_fn(form, photo_name):
     if result is None:
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
         flash (f'{user} ', 'user_card_add-info')
+        body = f'''<h5>Новая карточка пользователя:</h5><br> 
+                <strong>Пользователь:</strong>  {user}<br><br> 
+                <strong>Управление:</strong> {management}<br><br> 
+                <strong>Отдел:</strong> {department}<br><br> 
+                <strong>Должность:</strong> {job}<br><br>
+                <strong>Примечание:</strong> {user_card_text}<br><br>
+                <strong>Статус:</strong> {type_user}'''
+        send_email.delay(body)
     else:
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
         flash (f'{user} ', 'user_card_update-info')
+        body = f'''<h5>Карточка пользователя обновлена:</h5><br>
+                <strong>Пользователь:</strong>  {user}<br><br> 
+                <strong>Управление:</strong> {management}<br><br> 
+                <strong>Отдел:</strong> {department}<br><br> 
+                <strong>Должность:</strong> {job}<br><br>
+                <strong>Примечание:</strong> {user_card_text}<br><br>
+                <strong>Статус:</strong> {type_user}'''
+        send_email.delay(body)
     conn.commit()
     conn.close()
 
@@ -461,6 +477,31 @@ def update_data_fn(table_name,value_new,type_data_new,value_old):
         cursor.execute(f"UPDATE {table_name} SET {type_data_new}_name = ? WHERE {type_data_new}_name = ?", (value_new, value_old))
         conn.commit()
         conn.close()
+        if type_data_new == 'management':
+            body = f'''<h5>Изменение названия Управления</h5><br> 
+                    <strong>Старое:</strong> {value_old}<br>
+                    <strong>Новое:</strong> {value_new}'''
+            flash (f'{value_old} изменена на {value_new}', 'data_update-info')
+            send_email.delay(body)
+        if type_data_new == 'department':
+            body = f'''<h5>Изменение названия Отдела</h5><br> 
+                    <strong>Старое:</strong> {value_old}<br>
+                    <strong>Новое:</strong> {value_new}'''
+            flash (f'{value_old} изменена на {value_new}', 'data_update-info')
+            send_email.delay(body)
+        if type_data_new == 'job':
+            body = f'''<h5>Изменение названия Должности</h5><br> 
+                    <strong>Старое:</strong> {value_old}<br>
+                    <strong>Новое:</strong> {value_new}'''
+            flash (f'{value_old} изменена на {value_new}', 'data_update-info')
+            send_email.delay(body)
+        if type_data_new == 'user':
+            body = f'''<h5>Изменение ФИО пользователя</h5><br> 
+                    <strong>Старое:</strong> {value_old}<br>
+                    <strong>Новое:</strong> {value_new}'''
+            flash (f'{value_old} изменена на {value_new}', 'data_update-info')
+            send_email.delay(body)
+        
 
 def card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old):
     conn = sqlite3.connect(path_db)

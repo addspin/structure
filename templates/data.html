@@ -109,6 +109,11 @@
                 <div class="alert {{alert_class}} fade show" role="alert">
                     <strong>{{ message }}</strong> - запись уже существует!
                 </div>
+            {% elif category == 'data_update-info' %}
+                {% set alert_class = 'alert-success' %}
+                <div class="alert {{alert_class}} fade show" role="alert">
+                    <strong>{{ message }}</strong> - запись обновлена!
+                </div>
             {% elif category == 'mgm_dep-nodata-info' %}
                 {% set alert_class = 'alert-warning' %}
                 <div class="alert {{alert_class}} fade show" role="alert">
