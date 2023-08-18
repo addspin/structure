@@ -245,11 +245,17 @@ def add_card_user_fn(form, photo_name):
 
 def update_find_user_fn(form, photo_name):
     management = request.form['management']
+    old_management = request.form['old_management']
     department = request.form['department']
+    old_department = request.form['old_department']
     job = request.form['job']
+    old_job = request.form['old_job']
     user = request.form['user']
+    old_user = request.form['old_user']
     user_card_text = request.form['user_card_text']
+    old_user_card_text = request.form['old_user_card_text']
     type_user = request.form['type_user']
+    old_type_user = request.form['old_type_user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -270,8 +276,26 @@ def update_find_user_fn(form, photo_name):
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
         flash (f'{user} ', 'user_card_add-info')
     else:
+        # cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user,))
+        # result = cursor.fetchone()[3]
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
         flash (f'{user} ', 'user_card_update-info')
+        body = f'''<h5>Старая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {old_user}<br>
+                <strong>Управление:</strong> {old_management}<br>
+                <strong>Отдел:</strong> {old_department}<br>
+                <strong>Должность:</strong> {old_job}<br>
+                <strong>Примечание:</strong> {old_user_card_text}<br>
+                <strong>Статус:</strong> {old_type_user}<br><br><br><br>
+
+                <h5>Новая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {user}<br>
+                <strong>Управление:</strong> {management}<br>
+                <strong>Отдел:</strong> {department}<br>
+                <strong>Должность:</strong> {job}<br>
+                <strong>Примечание:</strong> {user_card_text}<br>
+                <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+        send_email.delay(body)
     conn.commit()
     conn.close()
 
