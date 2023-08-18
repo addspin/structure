@@ -568,13 +568,15 @@ def delete_data_fn(value,type_data):
         cursor.execute(f"DELETE FROM card_user WHERE user_name = ?", (value,))
         flash (f'{value} ', f'{type_data}-remove-info')
         conn.commit()
-        body = f'Пользователь <strong>{value}</strong> удален'
+        body = f'''<h5>Удаление пользователя</h5><br>
+                <strong>Пользователь:</strong> {value}'''
         send_email.delay(body)
     if type_data == 'job':
         cursor.execute(f"DELETE FROM job WHERE job_name = ?", (value,))
         flash (f'{value} ', f'{type_data}-remove-info')
         conn.commit()
-        body = f'Должность <strong>{value}</strong> удалена'
+        body = f'''<h5>Удаление должности</h5><br>
+                <strong>Должность:</strong> {value}'''
         send_email.delay(body)
     if type_data == 'management':
         # если в управлении не осталось ни одного пользователя, удаляем управление
@@ -584,7 +586,8 @@ def delete_data_fn(value,type_data):
             cursor.execute(f"DELETE FROM mgm_dep WHERE management_name = ?", (value,))
             flash (f'{value} ', f'{type_data}-remove-info')
             conn.commit()
-            body = f'Управление <strong>{value}</strong> удалено'
+            body = f'''<h5>Удаление управления</h5><br>
+                    <strong>Управление:</strong> {value}'''
             send_email.delay(body)
         else:
             flash (f'{value} ', f'{type_data}-noremove-info')
@@ -627,12 +630,14 @@ def add_data_fn(form):
         if result is None:
             cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
             flash (f'{management} и {department}', 'mgm_dep-info')
-            body = f'Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
+            body = f'''<h5>Добавление управления и отдела</h5><br>
+                    Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'''
             send_email.delay(body)
         if result is not None:
             cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
             flash (f'{department}', 'mgm_dep-info')
-            body = f'В управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'
+            body = f'''<h5>Добавление нового отдела в управление</h5><br>
+                    В управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'''
             send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
