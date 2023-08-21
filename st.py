@@ -720,7 +720,7 @@ def export():
     # Сохранение файла
     workbook.save(export_path)
 
-    return send_file('export/structure.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return send_file(export_path, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     
 
 if __name__ == '__main__':
