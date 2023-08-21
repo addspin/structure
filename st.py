@@ -172,15 +172,12 @@ def find_update():
         if os.path.exists(file_path):
             os.remove(file_path)
         photos.save(request.files['photo'])
-        # add_card_user_fn(form, photo_name)
         update_find_user_fn(form, photo_name)
         return redirect(url_for('search'))
 
     if request.method == 'POST':
         form = request.form
-        # photo_name = 'no_photo.png'
         photo_name = extract_photo_name_fn(form)
-        # add_card_user_fn(form, photo_name)
         update_find_user_fn(form, photo_name)
         return redirect(url_for('search'))    
 
@@ -276,8 +273,6 @@ def update_find_user_fn(form, photo_name):
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
         flash (f'{user} ', 'user_card_add-info')
     else:
-        # cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user,))
-        # result = cursor.fetchone()[3]
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
