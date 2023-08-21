@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, flash, redirect
+from flask import Flask, render_template, url_for, request, flash, redirect, send_file
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -6,6 +6,7 @@ import os
 import ssl
 from flask_mail import Mail, Message
 from celery import Celery
+import pandas as pd
 
 
 app = Flask(__name__)
@@ -692,7 +693,10 @@ def extract_type_user_fn():
 
 @app.route('/export', methods=['GET', 'POST'])
 def export():
-    return render_template('export.html', side_pos='active')
+    conn = sqlite3.connect(path_db)
+    export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
+    export_data.to_csv('export/structure.csv', index=False)
+    return send_file('export/structure.csv', as_attachment=True)
 
 
 if __name__ == '__main__':

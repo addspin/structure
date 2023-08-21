@@ -4,3 +4,4 @@ static/uploads/photos/*
 __pycache__/
 wsgi.py
 config.py
+export/
