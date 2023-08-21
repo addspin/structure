@@ -695,9 +695,11 @@ def extract_type_user_fn():
 def export():
     conn = sqlite3.connect(path_db)
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
-    export_data.to_csv('export/structure.csv', index=False)
+    # export_data.to_csv('export/structure.csv', index=False)
+    export_data.to_excel('export/structure.xlsx', index=False)
     conn.close()
-    return send_file('export/structure.csv', as_attachment=True)
+    # return send_file('export/structure.csv', as_attachment=True)
+    return send_file('export/structure.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     
 
 if __name__ == '__main__':
