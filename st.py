@@ -7,6 +7,8 @@ import ssl
 from flask_mail import Mail, Message
 from celery import Celery
 import pandas as pd
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 
 app = Flask(__name__)
@@ -695,10 +697,30 @@ def extract_type_user_fn():
 def export():
     conn = sqlite3.connect(path_db)
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
+
+    # Замена имен колонок
+    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отелы', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:'})
+    
+    # Исключение колонок
+    columns_to_exclude = ['id', 'photo_name']
+    export_data = export_data.drop(columns_to_exclude, axis=1)
+
     # export_data.to_csv('export/structure.csv', index=False)
     export_data.to_excel('export/structure.xlsx', index=False)
+    export_path = 'export/structure.xlsx'  # Путь для сохранения файла в формате Excel
     conn.close()
     # return send_file('export/structure.csv', as_attachment=True)
+    # Создание файла Excel с помощью openpyxl
+    workbook = Workbook()
+    sheet = workbook.active
+
+    # Запись данных в файл Excel
+    for row in dataframe_to_rows(export_data, index=False, header=True):
+        sheet.append(row)
+
+    # Сохранение файла
+    workbook.save(export_path)
+
     return send_file('export/structure.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     
 
