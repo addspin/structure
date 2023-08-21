@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, flash, redirect, send_file
+from flask import Flask, render_template, url_for, request, flash, redirect, send_file, make_response, Response
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -696,8 +696,9 @@ def export():
     conn = sqlite3.connect(path_db)
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
     export_data.to_csv('export/structure.csv', index=False)
+    conn.close()
     return send_file('export/structure.csv', as_attachment=True)
-
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
