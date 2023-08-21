@@ -82,6 +82,7 @@ def card():
             data_type = 'management'
             extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            # extract_job_no_users = extract_job_no_users_fn(data_type,value)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
             return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
@@ -93,6 +94,12 @@ def card():
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
             return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+
+# def extract_job_no_users_fn(data_type,value)
+#     conn = sqlite3.connect(path_db)
+#     cursor = conn.cursor()
+#     cursor.execute(f"SELECT job_name FROM card_user WHERE job_name NOT IN (SELECT job_name FROM job WHERE management_name = 'Управление №1')")
+#     result2 = cursor.fetchall()
 
 def extract_count_mgm_dep_fn(data_type,value):
     conn = sqlite3.connect(path_db)
@@ -612,6 +619,7 @@ def create_table_data_fn():
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     conn.commit()
     conn.close()
 
