@@ -699,17 +699,16 @@ def export():
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
 
     # Замена имен колонок
-    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отелы', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:'})
+    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отделы:', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:'})
     
     # Исключение колонок
     columns_to_exclude = ['id', 'photo_name']
     export_data = export_data.drop(columns_to_exclude, axis=1)
 
-    # export_data.to_csv('export/structure.csv', index=False)
     export_data.to_excel('export/structure.xlsx', index=False)
     export_path = 'export/structure.xlsx'  # Путь для сохранения файла в формате Excel
     conn.close()
-    # return send_file('export/structure.csv', as_attachment=True)
+
     # Создание файла Excel с помощью openpyxl
     workbook = Workbook()
     sheet = workbook.active
