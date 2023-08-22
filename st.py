@@ -119,7 +119,7 @@ def card_no_data():
 def extract_free_job_fn(value, data_type):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name = ''", (value,))
+    cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name = ''", (value,))
     result = cursor.fetchall()
     print(result)
     return result
@@ -133,7 +133,7 @@ def extract_user_data_search_fn(value, data_type):
         print(result)
         return result
     else:
-        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
+        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
         result = cursor.fetchall()
         return result
 
@@ -274,6 +274,7 @@ def update_find_user_fn(form, photo_name):
     old_user_card_text = request.form['old_user_card_text']
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
+    free_job_id = request.form['free_job_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -290,7 +291,7 @@ def update_find_user_fn(form, photo_name):
         return redirect(url_for('card_user'))
     
     if old_user == '':
-        cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name = ?", (old_management, old_department, old_job, old_type_user))
+        cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name= ? AND id = ?", (old_management, old_department, old_job, old_type_user, free_job_id))
         conn.commit()
 
 
@@ -451,6 +452,7 @@ def extract_find_user_data_modal_fn(form):
 def find_edit_modal():
     if request.method == 'POST':
         form = request.form
+        free_job_id = request.form['free_job_id']
         old_type_user = request.form['old_type_user']
         extract_user_name = extract_user_name_fn()
         extract_user_data_modal = extract_user_data_modal_fn(form)
@@ -458,15 +460,21 @@ def find_edit_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_modal.html', old_type_user=old_type_user, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        return render_template('find_edit_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
+    free_job_id = request.form['free_job_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
-    result = cursor.fetchall()
-    return result
+    if user_edit_name != '':
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
+        result = cursor.fetchall()
+        return result
+    if user_edit_name == '':
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE id = ?", (free_job_id,))
+        result = cursor.fetchall()
+        return result
 
 @app.route('/data/update', methods=['PUT'])
 def update():

@@ -9,19 +9,19 @@
 				<form hx-post="/find/update" hx-target="#main" hx-swap="innerHTML" hx-include="#card_user_form" id="card_user_form" class="needs-validation" enctype="multipart/form-data" action=""  novalidate>
 					<div class="row align-items-start">
 						{% for value in extract_user_data_modal %} 
-						<img class="img_upload" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" alt="Моя картинка">
+						<img class="img_upload" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" alt="Моя картинка">
 						{% endfor %}
 						<div class="input-group md-3 col">
 							<span class="input-group-text" id="basic-addon1">Управление:</span>
 							<select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value">
 							{% for value in extract_user_data_modal %}
-							<option selected>{{ value[0] }}</option>
+							<option selected>{{ value[1] }}</option>
 							{% endfor %}
 							{% for value in extract_management_data %}
 							<option value="{{value.management_name}}">{{value.management_name}}</option>
 							{% endfor %}
 							{% for value in extract_user_data_modal %}
-							<input type="hidden" name="old_management" value="{{ value[0] }}">
+							<input type="hidden" name="old_management" value="{{ value[1] }}">
 							{% endfor %}
 							</select>
 
@@ -29,13 +29,13 @@
 								<span class="input-group-text" id="basic-addon1">Отдел:</span>
 								<select class="form-select" id="inputGroupSelect01" name="department" required>
 								{% for value in extract_user_data_modal %}
-								<option selected>{{ value[1] }}</option>
+								<option selected>{{ value[2] }}</option>
 								{% endfor %}
 								{% for value in extract_department_data %}
 								<option value="{{value.department_name}}">{{value.department_name}}</option>
 								{% endfor %}
 								{% for value in extract_user_data_modal %}
-								<input type="hidden" name="old_department" value="{{ value[1] }}">
+								<input type="hidden" name="old_department" value="{{ value[2] }}">
 								{% endfor %}
 								</select>
 							</div>
@@ -44,13 +44,13 @@
 								<span class="input-group-text" id="basic-addon1">Должность:</span>
 								<select class="form-select" id="inputGroupSelect01" name="job" required>
 								{% for value in extract_user_data_modal %}
-								<option selected>{{ value[2] }}</option>
+								<option selected>{{ value[3] }}</option>
 								{% endfor %}
 								{% for value in extract_job_data %}
 								<option value="{{value.job_name}}">{{value.job_name}}</option>
 								{% endfor %}
 								{% for value in extract_user_data_modal %}
-								<input type="hidden" name="old_job" value="{{ value[2] }}">
+								<input type="hidden" name="old_job" value="{{ value[3] }}">
 								{% endfor %}
 								</select>
 							</div>
@@ -59,13 +59,13 @@
 								<span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
 								<select class="form-select" id="inputGroupSelect01" name="user" required>
 								{% for value in extract_user_data_modal %}
-								<option selected>{{ value[3] }}</option>
+								<option selected>{{ value[4] }}</option>
 								{% endfor %}
 								{% for value in extract_user_name %}
 								<option value="{{value.user_name}}">{{value.user_name}}</option>
 								{% endfor %}
 								{% for value in extract_user_data_modal %}
-								<input type="hidden" name="old_user" value="{{ value[3] }}">
+								<input type="hidden" name="old_user" value="{{ value[4] }}">
 								{% endfor %}
 								</select>
 							</div>
@@ -82,8 +82,8 @@
 							</div>
 							<div class="col-sm-6 col-md-5 col-lg-6 mb-3">       
 								{% for value in extract_user_data_modal %}         
-								<textarea class="form-control" id="device_text"  name="user_card_text" rows="3" placeholder="Любая дополнительная информация (Поле может не заполняться)" novalidate>{{ value[4] }}</textarea>
-								<input type="hidden" name="old_user_card_text" value="{{ value[4] }}">
+								<textarea class="form-control" id="device_text"  name="user_card_text" rows="3" placeholder="Любая дополнительная информация (Поле может не заполняться)" novalidate>{{ value[5] }}</textarea>
+								<input type="hidden" name="old_user_card_text" value="{{ value[5] }}">
 								{% endfor %}
 							</div>
 							<div class="col-sm-6 col-md-5 offset-md-2 col-lg-6 offset-lg-0">
@@ -95,7 +95,7 @@
 									</svg> 
 									</label>
 									{% for value in extract_user_data_modal %} 
-									<input  name="photo" value="{{ value[5] }}" id="file_upload" type="file" class="form-control">
+									<input  name="photo" value="{{ value[6] }}" id="file_upload" type="file" class="form-control">
 									{% endfor %}
 									<div class="input-group"  style="margin-top: 10px;">
 										<span class="input-group-text" id="basic-addon1">Текущий статус сотрудника:</span>
@@ -105,8 +105,8 @@
 										<option value="{{value.type_name}}">{{value.type_name}}</option>
 										{% endfor %}
 										</select>
-										
 										<input type="hidden" name="old_type_user" value="{{old_type_user}}">
+										<input type="hidden" name="free_job_id" value="{{free_job_id}}">
 										
 									</div>
 								</div>
