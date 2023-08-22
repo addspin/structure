@@ -51,7 +51,7 @@ def extract_all_user_fn():
     conn = sqlite3.connect(path_db)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM card_user ")
+    cursor.execute("SELECT * FROM card_user WHERE user_name !=''")
     result = cursor.fetchall()
     return result
 
@@ -80,49 +80,60 @@ def card():
         if 'management' in form_keys:
             value = form_data['management']
             data_type = 'management'
-            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            print(extract_count_free)
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
-            # extract_job_no_users = extract_job_no_users_fn(data_type,value)
+            extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+                # extract_free_job = extract_free_job_fn(value,data_type)
+            return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+
+            # return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
         if 'department' in form_keys:
             value = form_data['department']
             data_type = 'department'
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
-            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+            return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
 
-# def extract_job_no_users_fn(data_type,value)
-#     conn = sqlite3.connect(path_db)
-#     cursor = conn.cursor()
-#     cursor.execute(f"SELECT job_name FROM card_user WHERE job_name NOT IN (SELECT job_name FROM job WHERE management_name = 'Управление №1')")
-#     result2 = cursor.fetchall()
 
 def extract_count_mgm_dep_fn(data_type,value):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ?", (value,))
+    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
     result = cursor.fetchone()[0]
+    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ? AND user_name = '' ", (value,))
+    result2 = cursor.fetchone()[0]
     conn.close()
-    return result
+    return (result2, result)
 
 
 @app.route('/card_no_data', methods=['GET', 'POST'])
 def card_no_data():
     return render_template('card_no_data.html')
 
+def extract_free_job_fn(value, data_type):
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name = ''", (value,))
+    result = cursor.fetchall()
+    print(result)
+    return result
+    
 def extract_user_data_search_fn(value, data_type):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     cursor.execute(f"SELECT user_name FROM card_user WHERE {data_type}_name = ?", (value,))
     result = cursor.fetchone()
     if result is None:
+        print(result)
         return result
     else:
-        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ?", (value,))
+        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
         result = cursor.fetchall()
         return result
 
@@ -211,18 +222,18 @@ def add_card_user_fn(form, photo_name):
     type_user = request.form['type_user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    if management == '':
+   
+    if management != '' and department != '' and job != '' and type_user == 'Свободная ставка':
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        flash (f'Свободная ставка - {job} ', 'user_card_add-info')
+        conn.commit()
+        return redirect(url_for('card_user'))
+
+    if management == '' or department == '' or job == '' or user == '':
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
-    if department == '':
-        flash (f'{department} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
-    if job == '':
-        flash (f'{job} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
-    if user == '':
-        flash (f'{user} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
+
+
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
@@ -277,6 +288,12 @@ def update_find_user_fn(form, photo_name):
     if user == '':
         flash (f'{user} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
+    
+    if old_user == '':
+        cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name = ?", (old_management, old_department, old_job, old_type_user))
+        conn.commit()
+
+
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
@@ -341,8 +358,12 @@ def extract_count_fn():
     job = cursor.fetchone()[0]
     cursor.execute("SELECT COUNT(user_name) FROM user")
     user = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(user_name) FROM card_user where type_name = 'Свободная ставка'")
+    user_free = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(user_name) FROM card_user where user_name != ''")
+    user_in_card = cursor.fetchone()[0]
     conn.close()
-    return mgm, dep, job, user
+    return mgm, dep, job, user, user_free, user_in_card
 
 @app.route('/data/no_data', methods=['GET', 'POST'])
 def no_data():
@@ -430,13 +451,14 @@ def extract_find_user_data_modal_fn(form):
 def find_edit_modal():
     if request.method == 'POST':
         form = request.form
+        old_type_user = request.form['old_type_user']
         extract_user_name = extract_user_name_fn()
         extract_user_data_modal = extract_user_data_modal_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_modal.html', extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        return render_template('find_edit_modal.html', old_type_user=old_type_user, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
@@ -619,7 +641,7 @@ def create_table_data_fn():
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     conn.commit()
     conn.close()
 

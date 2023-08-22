@@ -39,7 +39,7 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-            <select class="form-select" id="user" name="user" required>
+            <select class="form-select" id="user" name="user" >
             <option selected></option>
             {% for value in extract_user_name_data %}
             <option value="{{value.user_name}}">{{value.user_name}}</option>

@@ -95,7 +95,7 @@
 									</svg> 
 									</label>
 									{% for value in extract_user_data_modal %} 
-									<input value="{{ value[5] }}" name="photo" id="file_upload" type="file" class="form-control">
+									<input  name="photo" value="{{ value[5] }}" id="file_upload" type="file" class="form-control">
 									{% endfor %}
 									<div class="input-group"  style="margin-top: 10px;">
 										<span class="input-group-text" id="basic-addon1">Текущий статус сотрудника:</span>
@@ -105,9 +105,9 @@
 										<option value="{{value.type_name}}">{{value.type_name}}</option>
 										{% endfor %}
 										</select>
-										{% for value in extract_type_user %}
-										<input type="hidden" name="old_type_user" value="{{value.type_name}}">
-										{% endfor %}
+										
+										<input type="hidden" name="old_type_user" value="{{old_type_user}}">
+										
 									</div>
 								</div>
 							</div>
