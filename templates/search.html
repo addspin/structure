@@ -42,7 +42,7 @@
         </span>
         <input id="search" type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
     </div>
-    <div style="padding: 0px;" class="message_data">
+    <div id="alert" style="padding: 0px;" class="message_data alert fade show">
       {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
               {% if category == 'user_card_add-info' %}
@@ -54,6 +54,11 @@
                   {% set alert_class = 'alert-success' %}
                   <div class="alert {{alert_class}} fade show" role="alert">
                       <strong>{{ message }}</strong> - запись обновлена!
+                  </div>
+              {% elif category == 'user_card_user_name_exist-info' %}
+                  {% set alert_class = 'alert-warning' %}
+                  <div class="alert {{alert_class}} fade show" role="alert">
+                      <strong>{{ message }}</strong> - запись уже существует!
                   </div>
               {% elif category == 'user_card_nodata-info' %}
                   {% set alert_class = 'alert-warning' %}
@@ -174,4 +179,13 @@
 </script>
 
 <script src="{{ url_for('static', filename='/local_js/search_object.js') }}"></script>
+
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const alert = bootstrap.Alert.getOrCreateInstance('#alert');
+      alert.close();
+    }, 10000);
+  });
+</script> -->
 {%endblock%}
