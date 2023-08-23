@@ -32,7 +32,7 @@
         {% for value in extract_free_job %}
         {% if loop.index % 2 == 0 %} 
         <label class="card_local gap-3  list_items mb-3 free_job" hx-post="/data/find_edit_free_job_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
-            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
+            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
             <span>
                 <!-- <hr class="um_service_hr"> -->
             <h6>{{ value[4] }}</h6>
