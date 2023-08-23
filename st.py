@@ -275,6 +275,7 @@ def update_find_user_fn(form, photo_name):
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
     free_job_id = request.form['free_job_id']
+    photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -290,18 +291,40 @@ def update_find_user_fn(form, photo_name):
         flash (f'{user} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
     
-    if old_user == '':
+    if old_type_user == '':
         cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name= ? AND id = ?", (old_management, old_department, old_job, old_type_user, free_job_id))
         conn.commit()
 
+   
 
-    cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
-    result = cursor.fetchone()
-    if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
-        flash (f'{user} ', 'user_card_add-info')
+    if old_management == '' and old_department == '' and old_job == '' and old_user == '':
+        cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
+        result = cursor.fetchone()
+        if result is None:
+            cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+            flash (f'{user} ', 'user_card_add-info')
+
+    if type_user == 'Свободная ставка' and old_user != '':
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, photo_name, type_user, free_job_id))
+        flash (f'{user} ', 'user_card_update-info')
+        body = f'''<h5>Старая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {old_user}<br>
+                <strong>Управление:</strong> {old_management}<br>
+                <strong>Отдел:</strong> {old_department}<br>
+                <strong>Должность:</strong> {old_job}<br>
+                <strong>Примечание:</strong> {old_user_card_text}<br>
+                <strong>Статус:</strong> {old_type_user}<br><br>
+
+                <h5>Новая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {user}<br>
+                <strong>Управление:</strong> {management}<br>
+                <strong>Отдел:</strong> {department}<br>
+                <strong>Должность:</strong> {job}<br>
+                <strong>Примечание:</strong> {user_card_text}<br>
+                <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+        send_email.delay(body)
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, free_job_id))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {old_user}<br>
