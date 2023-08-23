@@ -81,7 +81,6 @@ def card():
             value = form_data['management']
             data_type = 'management'
             extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
-            print(extract_count_free)
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
             extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
@@ -121,7 +120,6 @@ def extract_free_job_fn(value, data_type):
     cursor = conn.cursor()
     cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name = ''", (value,))
     result = cursor.fetchall()
-    print(result)
     return result
     
 def extract_user_data_search_fn(value, data_type):
@@ -130,7 +128,6 @@ def extract_user_data_search_fn(value, data_type):
     cursor.execute(f"SELECT user_name FROM card_user WHERE {data_type}_name = ?", (value,))
     result = cursor.fetchone()
     if result is None:
-        print(result)
         return result
     else:
         cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
@@ -331,7 +328,7 @@ def update_find_user_fn(form, photo_name):
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
     free_job_id = request.form['free_job_id']
-    photo_name = request.form['photo']
+    # photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -352,19 +349,17 @@ def update_find_user_fn(form, photo_name):
         # conn.commit()
 
    
-# Добавить новую карточку пользователя
+    # Добавить новую карточку пользователя
     if old_management == '' and old_department == '' and old_job == '' and old_user == '':
         cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
         result = cursor.fetchone()
         if result is None:
             cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
             flash (f'{user} ', 'user_card_add-info')
-# Обновить карточку, перевести занятую ставку в "Свободную ставку"   
+    # Обновить карточку, перевести занятую ставку в "Свободную ставку"   
     if type_user == 'Свободная ставка' and user != '':
-        print('экакого хрена')
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, 'sdfsdf', 'hello', 'no_photo.png', type_user, free_job_id))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, photo_name, type_user, free_job_id))
         flash (f'{user} ', 'user_card_update-info')
-        print('экакого хрена')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {old_user}<br>
                 <strong>Управление:</strong> {old_management}<br>
@@ -382,8 +377,7 @@ def update_find_user_fn(form, photo_name):
                 <strong>Статус:</strong> {type_user}<br><br><br><br>'''
         send_email.delay(body)
         # conn.commit()
-# Обновить карточку со "Свободной ставкой"
-    # if type_user == 'Свободная ставка' and old_type_user == 'Свободная ставка':
+    # Обновить карточку со "Свободной ставкой"
     if type_user == 'Свободная ставка' and user == '':
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, 'no_photo.png', type_user, free_job_id))
         flash (f' ', 'user_card_update-info')
@@ -410,24 +404,26 @@ def update_find_user_fn(form, photo_name):
         if result is not None:
             flash (f'{user} ', 'user_card_user_name_exist-info')
         else:
-            cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, 'Привет', photo_name, type_user, free_job_id))
-            flash (f'{old_user} ', 'user_card_update-info')
-            body = f'''<h5>Старая карточка пользователя:</h5><br>
-                    <strong>Пользователь:</strong>  {old_user}<br>
-                    <strong>Управление:</strong> {old_management}<br>
-                    <strong>Отдел:</strong> {old_department}<br>
-                    <strong>Должность:</strong> {old_job}<br>
-                    <strong>Примечание:</strong> {old_user_card_text}<br>
-                    <strong>Статус:</strong> {old_type_user}<br><br>
+            # Обновить карточку
+            if type_user != 'Свободная ставка':
+                cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, free_job_id))
+                flash (f'{old_user} ', 'user_card_update-info')
+                body = f'''<h5>Старая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {old_user}<br>
+                        <strong>Управление:</strong> {old_management}<br>
+                        <strong>Отдел:</strong> {old_department}<br>
+                        <strong>Должность:</strong> {old_job}<br>
+                        <strong>Примечание:</strong> {old_user_card_text}<br>
+                        <strong>Статус:</strong> {old_type_user}<br><br>
 
-                    <h5>Новая карточка пользователя:</h5><br>
-                    <strong>Пользователь:</strong>  {user}<br>
-                    <strong>Управление:</strong> {management}<br>
-                    <strong>Отдел:</strong> {department}<br>
-                    <strong>Должность:</strong> {job}<br>
-                    <strong>Примечание:</strong> {user_card_text}<br>
-                    <strong>Статус:</strong> {type_user}<br><br><br><br>'''
-            send_email.delay(body)
+                        <h5>Новая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {user}<br>
+                        <strong>Управление:</strong> {management}<br>
+                        <strong>Отдел:</strong> {department}<br>
+                        <strong>Должность:</strong> {job}<br>
+                        <strong>Примечание:</strong> {user_card_text}<br>
+                        <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+                send_email.delay(body)
     conn.commit()
     conn.close()
 
@@ -570,6 +566,21 @@ def find_edit_modal():
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
         return render_template('find_edit_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+
+@app.route('/data/find_edit_free_job_modal', methods=['GET', 'POST'])
+def find_edit_free_job_modal():
+    if request.method == 'POST':
+        form = request.form
+        free_job_id = request.form['free_job_id']
+        old_type_user = request.form['old_type_user']
+        extract_user_name = extract_user_name_fn()
+        extract_user_data_modal = extract_user_data_modal_fn(form)
+        extract_management_data = extract_management_fn()
+        extract_department_data = extract_department_fn()
+        extract_job_data = extract_job_fn()
+        extract_type_user = extract_type_user_fn()
+        return render_template('find_edit_free_job_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+
 
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
