@@ -526,8 +526,12 @@ def extract_count_fn():
     user_free = cursor.fetchone()[0]
     cursor.execute("SELECT COUNT(user_name) FROM card_user where user_name != ''")
     user_in_card = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(mail_name) FROM mail")
+    mail = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(phone_name) FROM phone")
+    phone = cursor.fetchone()[0]
     conn.close()
-    return mgm, dep, job, user, user_free, user_in_card
+    return mgm, dep, job, user, user_free, user_in_card, mail, phone
 
 @app.route('/data/no_data', methods=['GET', 'POST'])
 def no_data():
@@ -591,6 +595,25 @@ def extract_job_data_modal_fn(form):
     if result:
         value = result[0]
         conn.close()
+        return value
+
+@app.route('/data/phone_edit_modal', methods=['GET', 'POST'])
+def phone_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_phone_data_modal = extract_phone_data_modal_fn(form)
+        return render_template('phone_edit_modal.html', extract_phone_data_modal=extract_phone_data_modal)
+
+def extract_phone_data_modal_fn(form):
+    phone_edit_id = request.form['phone_edit_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT phone_name FROM phone WHERE id = ?", (phone_edit_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        print(value)
         return value
 
 @app.route('/data/user_edit_modal', methods=['GET', 'POST'])
@@ -706,6 +729,18 @@ def update():
             update_data_fn(table_name,value_new,type_data_new,value_old)
             card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old) 
             return redirect(url_for('data'))
+        
+        if 'phone' in form_keys:
+            type_data_new = 'phone'
+            value_new = form_data['phone']
+            table_name = 'phone'
+            table_name_card_user = 'card_user'
+        if 'phone_old' in form_keys:
+            value_old = form_data['phone_old']
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            # card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old)
+            return redirect(url_for('data'))
+        
 
 def update_data_fn(table_name,value_new,type_data_new,value_old):
     conn = sqlite3.connect(path_db)
@@ -776,6 +811,11 @@ def delete():
             value = form_data['user_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
+        if 'phone_delete_name' in form_data:
+            type_data = 'phone'
+            value = form_data['phone_delete_name']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
    
 def delete_data_fn(value,type_data):
     conn = sqlite3.connect(path_db)
@@ -794,6 +834,13 @@ def delete_data_fn(value,type_data):
         conn.commit()
         body = f'''<h5>Удаление должности</h5><br>
                 <strong>Должность:</strong> {value}'''
+        send_email.delay(body)
+    if type_data == 'phone':
+        cursor.execute(f"DELETE FROM phone WHERE phone_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()
+        body = f'''<h5>Удаление телефона</h5><br>
+                <strong>Телефон:</strong> {value}'''
         send_email.delay(body)
     if type_data == 'management':
         # если в управлении не осталось ни одного пользователя, удаляем управление
