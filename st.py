@@ -51,7 +51,7 @@ def extract_all_user_fn():
     conn = sqlite3.connect(path_db)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM card_user ")
+    cursor.execute("SELECT * FROM card_user WHERE user_name !=''")
     result = cursor.fetchall()
     return result
 
@@ -80,40 +80,48 @@ def card():
         if 'management' in form_keys:
             value = form_data['management']
             data_type = 'management'
-            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
-            # extract_job_no_users = extract_job_no_users_fn(data_type,value)
+            extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+                # extract_free_job = extract_free_job_fn(value,data_type)
+            return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+
+            # return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
         if 'department' in form_keys:
             value = form_data['department']
             data_type = 'department'
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
-            extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-            return render_template('card.html', extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
+            return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
 
-# def extract_job_no_users_fn(data_type,value)
-#     conn = sqlite3.connect(path_db)
-#     cursor = conn.cursor()
-#     cursor.execute(f"SELECT job_name FROM card_user WHERE job_name NOT IN (SELECT job_name FROM job WHERE management_name = 'Управление №1')")
-#     result2 = cursor.fetchall()
 
 def extract_count_mgm_dep_fn(data_type,value):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ?", (value,))
+    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
     result = cursor.fetchone()[0]
+    cursor.execute(f"SELECT COUNT(user_name) FROM card_user WHERE {data_type}_name = ? AND user_name = '' ", (value,))
+    result2 = cursor.fetchone()[0]
     conn.close()
-    return result
+    return (result2, result)
 
 
 @app.route('/card_no_data', methods=['GET', 'POST'])
 def card_no_data():
     return render_template('card_no_data.html')
 
+def extract_free_job_fn(value, data_type):
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name = ''", (value,))
+    result = cursor.fetchall()
+    return result
+    
 def extract_user_data_search_fn(value, data_type):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
@@ -122,7 +130,7 @@ def extract_user_data_search_fn(value, data_type):
     if result is None:
         return result
     else:
-        cursor.execute(f"SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ?", (value,))
+        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
         result = cursor.fetchall()
         return result
 
@@ -172,6 +180,10 @@ def card_user_update():
         add_card_user_fn(form, photo_name)
         return redirect(url_for('data'))
     
+@app.route('/find/search_modal', methods=['GET', 'POST'])
+def search_modal(): 
+    return render_template('search_modal.html')   
+
 @app.route('/find/update', methods=['GET', 'POST'])
 def find_update():    
     if request.method == 'POST' and 'photo' in request.files:
@@ -183,13 +195,62 @@ def find_update():
             os.remove(file_path)
         photos.save(request.files['photo'])
         update_find_user_fn(form, photo_name)
-        return redirect(url_for('search'))
+
+        
+        form_data = request.form.to_dict()
+        form_keys = request.form.keys()
+        
+        if 'management' in form_keys:
+            value = form_data['management']
+            data_type = 'management'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            extract_free_job = extract_free_job_fn(value,data_type)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            return render_template('update_search_mgm_dep.html', extract_count_free=extract_count_free, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
+            
+        if 'department' in form_keys:
+            value = form_data['department']
+            data_type = 'department'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            extract_free_job = extract_free_job_fn(value,data_type)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            return render_template('update_search_mgm_dep.html', extract_count_free=extract_count_free, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
+
+        # return redirect(url_for('search'))
+        # else:
+        #     extract_all_user = extract_all_user_fn()
+        #     extract_count = extract_count_fn()
+        #     return render_template('update_search.html', extract_count=extract_count, extract_all_user=extract_all_user)
 
     if request.method == 'POST':
         form = request.form
         photo_name = extract_photo_name_fn(form)
         update_find_user_fn(form, photo_name)
-        return redirect(url_for('search'))    
+
+
+        form_data = request.form.to_dict()
+        form_keys = request.form.keys()
+        
+        if 'management' in form_keys:
+            value = form_data['management']
+            data_type = 'management'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            extract_free_job = extract_free_job_fn(value,data_type)
+            extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
+            return render_template('update_search_mgm_dep.html', extract_count_free=extract_count_free, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
+            
+        if 'department' in form_keys:
+            value = form_data['department']
+            data_type = 'department'
+            extract_user_data_search = extract_user_data_search_fn(value,data_type)
+            extract_free_job = extract_free_job_fn(value,data_type)
+            return render_template('update_search_mgm_dep.html', extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
+
+        # return redirect(url_for('search'))
+        # else:
+        #     extract_all_user = extract_all_user_fn()
+        #     extract_count = extract_count_fn()
+        #     return render_template('update_search.html', extract_count=extract_count, extract_all_user=extract_all_user)   
 
 def extract_photo_name_fn(form):
     user = request.form['user']
@@ -201,6 +262,9 @@ def extract_photo_name_fn(form):
         value = result[0]
         conn.close()
         return value
+    else:
+        value = 'no_photo.png'
+        return value
     
 def add_card_user_fn(form, photo_name):
     management = request.form['management']
@@ -211,18 +275,18 @@ def add_card_user_fn(form, photo_name):
     type_user = request.form['type_user']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    if management == '':
+   
+    if management != '' and department != '' and job != '' and type_user == 'Свободная ставка':
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        flash (f'Свободная ставка - {job} ', 'user_card_add-info')
+        conn.commit()
+        return redirect(url_for('card_user'))
+
+    if  management == '' or department == '' or job == '' or user == '':
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
-    if department == '':
-        flash (f'{department} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
-    if job == '':
-        flash (f'{job} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
-    if user == '':
-        flash (f'{user} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
+
+
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
@@ -263,6 +327,8 @@ def update_find_user_fn(form, photo_name):
     old_user_card_text = request.form['old_user_card_text']
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
+    free_job_id = request.form['free_job_id']
+    # photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -274,16 +340,25 @@ def update_find_user_fn(form, photo_name):
     if job == '':
         flash (f'{job} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
-    if user == '':
-        flash (f'{user} ', 'user_card_nodata-info')
-        return redirect(url_for('card_user'))
-    cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
-    result = cursor.fetchone()
-    if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
-        flash (f'{user} ', 'user_card_add-info')
-    else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
+    # if user == '':
+    #     flash (f'{user} ', 'user_card_nodata-info')
+    #     return redirect(url_for('card_user'))
+    
+    if old_type_user == '':
+        cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name= ? AND id = ?", (old_management, old_department, old_job, old_type_user, free_job_id))
+        # conn.commit()
+
+   
+    # Добавить новую карточку пользователя
+    if old_management == '' and old_department == '' and old_job == '' and old_user == '':
+        cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
+        result = cursor.fetchone()
+        if result is None:
+            cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+            flash (f'{user} ', 'user_card_add-info')
+    # Обновить карточку, перевести занятую ставку в "Свободную ставку"   
+    if type_user == 'Свободная ставка' and user != '':
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, photo_name, type_user, free_job_id))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {old_user}<br>
@@ -301,6 +376,54 @@ def update_find_user_fn(form, photo_name):
                 <strong>Примечание:</strong> {user_card_text}<br>
                 <strong>Статус:</strong> {type_user}<br><br><br><br>'''
         send_email.delay(body)
+        # conn.commit()
+    # Обновить карточку со "Свободной ставкой"
+    if type_user == 'Свободная ставка' and user == '':
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, 'no_photo.png', type_user, free_job_id))
+        flash (f' ', 'user_card_update-info')
+        body = f'''<h5>Старая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {old_user}<br>
+                <strong>Управление:</strong> {old_management}<br>
+                <strong>Отдел:</strong> {old_department}<br>
+                <strong>Должность:</strong> {old_job}<br>
+                <strong>Примечание:</strong> {old_user_card_text}<br>
+                <strong>Статус:</strong> {old_type_user}<br><br>
+
+                <h5>Новая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {user}<br>
+                <strong>Управление:</strong> {management}<br>
+                <strong>Отдел:</strong> {department}<br>
+                <strong>Должность:</strong> {job}<br>
+                <strong>Примечание:</strong> {user_card_text}<br>
+                <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+        send_email.delay(body)
+
+    else:
+        cursor.execute("SELECT user_name FROM card_user WHERE user_name = ? AND id != ?", (user, free_job_id))
+        result = cursor.fetchone()
+        if result is not None:
+            flash (f'{user} ', 'user_card_user_name_exist-info')
+        else:
+            # Обновить карточку
+            if type_user != 'Свободная ставка':
+                cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, free_job_id))
+                flash (f'{old_user} ', 'user_card_update-info')
+                body = f'''<h5>Старая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {old_user}<br>
+                        <strong>Управление:</strong> {old_management}<br>
+                        <strong>Отдел:</strong> {old_department}<br>
+                        <strong>Должность:</strong> {old_job}<br>
+                        <strong>Примечание:</strong> {old_user_card_text}<br>
+                        <strong>Статус:</strong> {old_type_user}<br><br>
+
+                        <h5>Новая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {user}<br>
+                        <strong>Управление:</strong> {management}<br>
+                        <strong>Отдел:</strong> {department}<br>
+                        <strong>Должность:</strong> {job}<br>
+                        <strong>Примечание:</strong> {user_card_text}<br>
+                        <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+                send_email.delay(body)
     conn.commit()
     conn.close()
 
@@ -341,8 +464,12 @@ def extract_count_fn():
     job = cursor.fetchone()[0]
     cursor.execute("SELECT COUNT(user_name) FROM user")
     user = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(user_name) FROM card_user where type_name = 'Свободная ставка'")
+    user_free = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(user_name) FROM card_user where user_name != ''")
+    user_in_card = cursor.fetchone()[0]
     conn.close()
-    return mgm, dep, job, user
+    return mgm, dep, job, user, user_free, user_in_card
 
 @app.route('/data/no_data', methods=['GET', 'POST'])
 def no_data():
@@ -430,21 +557,44 @@ def extract_find_user_data_modal_fn(form):
 def find_edit_modal():
     if request.method == 'POST':
         form = request.form
+        free_job_id = request.form['free_job_id']
+        old_type_user = request.form['old_type_user']
         extract_user_name = extract_user_name_fn()
         extract_user_data_modal = extract_user_data_modal_fn(form)
         extract_management_data = extract_management_fn()
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_modal.html', extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        return render_template('find_edit_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+
+@app.route('/data/find_edit_free_job_modal', methods=['GET', 'POST'])
+def find_edit_free_job_modal():
+    if request.method == 'POST':
+        form = request.form
+        free_job_id = request.form['free_job_id']
+        old_type_user = request.form['old_type_user']
+        extract_user_name = extract_user_name_fn()
+        extract_user_data_modal = extract_user_data_modal_fn(form)
+        extract_management_data = extract_management_fn()
+        extract_department_data = extract_department_fn()
+        extract_job_data = extract_job_fn()
+        extract_type_user = extract_type_user_fn()
+        return render_template('find_edit_free_job_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+
 
 def extract_user_data_modal_fn(form):
     user_edit_name = request.form['user_edit_name']
+    free_job_id = request.form['free_job_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
-    result = cursor.fetchall()
-    return result
+    if user_edit_name != '':
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
+        result = cursor.fetchall()
+        return result
+    if user_edit_name == '':
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE id = ?", (free_job_id,))
+        result = cursor.fetchall()
+        return result
 
 @app.route('/data/update', methods=['PUT'])
 def update():
@@ -619,7 +769,7 @@ def create_table_data_fn():
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     conn.commit()
     conn.close()
 

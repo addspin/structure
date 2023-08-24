@@ -3,7 +3,7 @@
 	<div style="max-width: 1100px;" class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Вы редактируете пользователя:</h5>
+				<h5 class="modal-title">Вы редактируете свободную ставку:</h5>
 			</div>
 			<div id="modal-body" class="modal-body">
 				<form hx-post="/find/update" hx-target="#search_data" hx-swap="innerHTML" hx-include="#card_user_form" id="card_user_form" class="needs-validation" enctype="multipart/form-data" action=""  novalidate>
@@ -13,7 +13,10 @@
 						{% endfor %}
 						<div class="input-group md-3 col">
 							<span class="input-group-text" id="basic-addon1">Управление:</span>
-							<select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value">
+							{% for value in extract_user_data_modal %}
+							<input type="hidden" name="management" value="{{ value[1] }}">
+							{% endfor %}
+							<select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value" disabled>
 							{% for value in extract_user_data_modal %}
 							<option selected>{{ value[1] }}</option>
 							{% endfor %}
@@ -27,7 +30,10 @@
 
 							<div style="margin-top: 15px;" class="input-group ">
 								<span class="input-group-text" id="basic-addon1">Отдел:</span>
-								<select class="form-select" id="inputGroupSelect01" name="department" required>
+								{% for value in extract_user_data_modal %}
+								<input type="hidden" name="department" value="{{ value[2] }}">
+								{% endfor %}
+								<select class="form-select" id="inputGroupSelect01" name="department" required disabled>
 								{% for value in extract_user_data_modal %}
 								<option selected>{{ value[2] }}</option>
 								{% endfor %}
@@ -42,7 +48,10 @@
 							
 							<div style="margin-top: 15px;" class="input-group mb-3">
 								<span class="input-group-text" id="basic-addon1">Должность:</span>
-								<select class="form-select" id="inputGroupSelect01" name="job" required>
+								{% for value in extract_user_data_modal %}
+								<input type="hidden" name="job" value="{{ value[3] }}">
+								{% endfor %}
+								<select class="form-select" id="inputGroupSelect01" name="job" required disabled>
 								{% for value in extract_user_data_modal %}
 								<option selected>{{ value[3] }}</option>
 								{% endfor %}

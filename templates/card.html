@@ -1,6 +1,6 @@
 
 <div id="search_data" class="search_data" >
-    <div class="count"><small> Всего: {{extract_count_mgm_dep}}</small></div>
+    <div class="count"><small> Занятых должностей: {{extract_count_mgm_dep}}</small>   <small> Cободных ставок: {{extract_count_free}}</small></div>
     <!-- В две колонки -->
     <!-- <div id="" class="d-flex gap-5 smooth_fade all_users"  > -->
     <!-- В одну колонку -->
@@ -9,17 +9,17 @@
        
         {% for value in extract_user_data_search %}
         {% if loop.index % 2 == 0 %} 
-        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
-            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}" >
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
             <span>
                 <!-- <hr class="um_service_hr"> -->
-            <h6>{{ value[3] }}</h6>
+            <h6>{{ value[4] }}</h6>
             <small class="d-block text-muted">
-                <strong>Должность:</strong> {{ value[2] }}
+                <strong>Должность:</strong> {{ value[3] }}
                 <hr class="um_service_hr">
-                <strong>Примечание:</strong> {{ value[4] }}
+                <strong>Примечание:</strong> {{ value[5] }}
                 <hr class="um_service_hr">
-                <strong>Текущий статус сотрудника:</strong> {{ value[6] }}
+                <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
                 <hr class="um_service_hr">
             </small>
             <hr class="um_service_hr">
@@ -28,21 +28,46 @@
         {% endif %}
         {% endfor %}
         </div>
+
+        <div class="list-group"   id="">
+       
+            {% for value in extract_free_job %}
+            {% if loop.index % 2 == 0 %} 
+            <label class="card_local gap-3  list_items mb-3 free_job" hx-post="/data/find_edit_free_job_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+                <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
+                <span>
+                    <!-- <hr class="um_service_hr"> -->
+                <h6>{{ value[4] }}</h6>
+                <small class="d-block text-muted">
+                    <strong>Должность:</strong> {{ value[3] }}
+                    <hr class="um_service_hr">
+                    <strong>Примечание:</strong> {{ value[5] }}
+                    <hr class="um_service_hr">
+                    <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
+                    <hr class="um_service_hr">
+                </small>
+                <hr class="um_service_hr">
+                </span> 
+            </label>
+            {% endif %}
+            {% endfor %}
+            </div>
+
         <div class="list-group"  id="">
             
             {% for value in extract_user_data_search %}
             {% if loop.index % 2 == 1 %}
-            <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[3] }}"'>
-            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[5]) }}">
+            <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+            <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}">
             <span>
-                <h6>{{ value[3] }}</h6>
+                <h6>{{ value[4] }}</h6>
                 <small class="d-block text-muted">
                 <hr class="um_service_hr">
-                <strong>Должность:</strong> {{ value[2] }}
+                <strong>Должность:</strong> {{ value[3] }}
                 <hr class="um_service_hr">
-                <strong>Примечание:</strong> {{ value[4] }}
+                <strong>Примечание:</strong> {{ value[5] }}
                 <hr class="um_service_hr">
-                <strong>Текущий статус сотрудника:</strong> {{ value[6] }}
+                <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
                 <hr class="um_service_hr">
                 </small>
                 <hr class="um_service_hr">
@@ -51,6 +76,31 @@
             {% endif %}
             {% endfor %}
         </div>
+
+        <div class="list-group"   id="">
+       
+            {% for value in extract_free_job %}
+            {% if loop.index % 2 == 1 %} 
+            <label class="card_local gap-3  list_items mb-3 free_job" hx-post="/data/find_edit_free_job_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+                <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
+                <span>
+                    <!-- <hr class="um_service_hr"> -->
+                <h6>{{ value[4] }}</h6>
+                <small class="d-block text-muted">
+                    <strong>Должность:</strong> {{ value[3] }}
+                    <hr class="um_service_hr">
+                    <strong>Примечание:</strong> {{ value[5] }}
+                    <hr class="um_service_hr">
+                    <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
+                    <hr class="um_service_hr">
+                </small>
+                <hr class="um_service_hr">
+                </span> 
+            </label>
+            {% endif %}
+            {% endfor %}
+            </div>
+
     </div>
 </div>
 

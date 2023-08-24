@@ -51,6 +51,10 @@ body {
     padding: 20px;
 }
 
+.free_job {
+    background-color: #2dec1494;
+}
+
 .search_data {
     width: 1200px;
     height: auto;
@@ -112,7 +116,7 @@ opacity: 0;
 
 .count {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-bottom: -4px;
     margin-top: -12px;
 }
@@ -150,7 +154,7 @@ opacity: 0;
     height: var(--bs-card-height);
     color: var(--bs-body-color);
     word-wrap: break-word;
-    background-color: var(--bs-card-bg);
+    /* background-color: var(--bs-card-bg); */
     background-clip: border-box;
     border: var(--bs-card-border-width) solid var(--bs-card-border-color);
     border-radius: var(--bs-card-border-radius);

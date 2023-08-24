@@ -39,7 +39,7 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-            <select class="form-select" id="user" name="user" required>
+            <select class="form-select" id="user" name="user" >
             <option selected></option>
             {% for value in extract_user_name_data %}
             <option value="{{value.user_name}}">{{value.user_name}}</option>
@@ -82,7 +82,7 @@
         </div>
     </form>
     
-    <div style="padding: 0px;" class="message_data">
+    <div id="alert" style="padding: 0px;" class="message_data fade show">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
                 {% if category == 'user_card_add-info' %}

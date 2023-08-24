@@ -42,7 +42,7 @@
         </span>
         <input id="search" type="text" class="form-control" placeholder="Поиск пользователя:" aria-label="Username" aria-describedby="basic-addon1">
     </div>
-    <div style="padding: 0px;" class="message_data">
+    <div id="alert" style="padding: 0px;" class="message_data fade show">
       {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
               {% if category == 'user_card_add-info' %}
@@ -54,6 +54,11 @@
                   {% set alert_class = 'alert-success' %}
                   <div class="alert {{alert_class}} fade show" role="alert">
                       <strong>{{ message }}</strong> - запись обновлена!
+                  </div>
+              {% elif category == 'user_card_user_name_exist-info' %}
+                  {% set alert_class = 'alert-warning' %}
+                  <div class="alert {{alert_class}} fade show" role="alert">
+                      <strong>{{ message }}</strong> - запись уже существует!
                   </div>
               {% elif category == 'user_card_nodata-info' %}
                   {% set alert_class = 'alert-warning' %}
@@ -68,7 +73,7 @@
 </div>
 
 <div id="search_data" class="search_data" hx-trigger="load">
-  <div id="count" class="count"><small>Всего: {{extract_count[3]}}</small></div>
+  <div id="count" class="count"><small>Всего сотрудников: {{extract_count[3]}}</small><small>Всего свободных ставок: {{extract_count[4]}}</small><small>Всего сотрудников в должности: {{extract_count[5]}}</small></div>
   <!-- <div class="spinner">
     <img  alt="Result loading..." class="htmx-indicator" width="50" src="{{ url_for('static', filename='svg/90-ring.svg') }}"/>
   </div> -->
@@ -80,7 +85,7 @@
    
     {% for value in extract_all_user %}
     {% if loop.index % 2 == 0 %} 
-    <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}"'>
+    <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
         <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
         <span>
             <hr class="um_service_hr">
@@ -103,7 +108,7 @@
         
         {% for value in extract_all_user %}
         {% if loop.index % 2 == 1 %}
-        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}"'>
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
         <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}">
         <span>
             <h6>{{ value[4] }}</h6>
@@ -174,4 +179,13 @@
 </script>
 
 <script src="{{ url_for('static', filename='/local_js/search_object.js') }}"></script>
+
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const alert = bootstrap.Alert.getOrCreateInstance('#alert');
+      alert.close();
+    }, 10000);
+  });
+</script> -->
 {%endblock%}
