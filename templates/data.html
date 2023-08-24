@@ -319,7 +319,7 @@ function submit_data() {
         htmx.ajax("post", "data", {target: '#main', swap: 'outerHTML', event: 'click', values: values_form});
     }
 //    отправить форму если заполнены поля job, mail, phone_long, phone_short
-    if ( selectElement_job.value !== "" || selectElement_user.value !== "" || selectElement_mail.value == "" || selectElement_phone_long.value == "" || selectElement_phone_short.value == "") { 
+    if ( selectElement_job.value !== "" || selectElement_user.value !== "" || selectElement_mail.value !== "" || selectElement_phone_long.value !== "" || selectElement_phone_short.value !== "") { 
         htmx.ajax("post", "data", {target: '#main', swap: 'outerHTML', event: 'click', values: values_form});
     }
 }

@@ -298,7 +298,7 @@ def add_card_user_fn(form, photo_name):
     cursor = conn.cursor()
    
     if management != '' and department != '' and job != '' and type_user == 'Свободная ставка':
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name) VALUES (?,?,?,?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short))
         flash (f'Свободная ставка - {job} ', 'user_card_add-info')
         body = f'''<h5>Новая карточка пользователя:</h5><br> 
                 <strong>Управление:</strong> {management}<br><br> 
@@ -356,9 +356,12 @@ def update_find_user_fn(form, photo_name):
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
     free_job_id = request.form['free_job_id']
-    # old_mail = request.form['old_mail']
-    # old_phone_long = request.form['old_phone_long']
-    # old_phone_short = request.form['old_phone_short']
+    mail = request.form['mail']
+    old_mail = request.form['old_mail']
+    phone_long = request.form['phone_long']
+    old_phone_long = request.form['old_phone_long']
+    phone_short = request.form['phone_short']
+    old_phone_short = request.form['old_phone_short']
     # photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
@@ -389,7 +392,7 @@ def update_find_user_fn(form, photo_name):
             flash (f'{user} ', 'user_card_add-info')
     # Обновить карточку, перевести занятую ставку в "Свободную ставку"   
     if type_user == 'Свободная ставка' and user != '':
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, photo_name, type_user, free_job_id))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE id = ?", (management, department, job, '', user_card_text, 'no_photo.png', type_user, '', '', '', free_job_id))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {old_user}<br>
@@ -412,6 +415,26 @@ def update_find_user_fn(form, photo_name):
     if type_user == 'Свободная ставка' and user == '':
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, 'no_photo.png', type_user, free_job_id))
         flash (f' ', 'user_card_update-info')
+        body = f'''<h5>Старая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {old_user}<br>
+                <strong>Управление:</strong> {old_management}<br>
+                <strong>Отдел:</strong> {old_department}<br>
+                <strong>Должность:</strong> {old_job}<br>
+                <strong>Примечание:</strong> {old_user_card_text}<br>
+                <strong>Статус:</strong> {old_type_user}<br><br>
+
+                <h5>Новая карточка пользователя:</h5><br>
+                <strong>Пользователь:</strong>  {user}<br>
+                <strong>Управление:</strong> {management}<br>
+                <strong>Отдел:</strong> {department}<br>
+                <strong>Должность:</strong> {job}<br>
+                <strong>Примечание:</strong> {user_card_text}<br>
+                <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+        send_email.delay(body)
+    # Перевести свободную ставку в карточку пользователя
+    if type_user != 'Свободная ставка' and old_type_user == "Свободная ставка":
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short, free_job_id))
+        flash (f'{old_user} ', 'user_card_update-info')
         body = f'''<h5>Старая карточка пользователя:</h5><br>
                 <strong>Пользователь:</strong>  {old_user}<br>
                 <strong>Управление:</strong> {old_management}<br>
@@ -627,11 +650,11 @@ def extract_user_data_modal_fn(form):
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if user_edit_name != '':
-        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE user_name = ?", (user_edit_name,))
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name FROM card_user WHERE user_name = ?", (user_edit_name,))
         result = cursor.fetchall()
         return result
     if user_edit_name == '':
-        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE id = ?", (free_job_id,))
+        cursor.execute("SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name FROM card_user WHERE id = ?", (free_job_id,))
         result = cursor.fetchall()
         return result
 
