@@ -12,15 +12,43 @@
         <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
             <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
             <span>
-                <!-- <hr class="um_service_hr"> -->
             <h6>{{ value[4] }}</h6>
             <small class="d-block text-muted">
                 <strong>Должность:</strong> {{ value[3] }}
+                <div class="row">
+                    <div class="col">
+                        <div class="">
+                            <strong>Почта:</strong> {{ value[8] }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="">
+                            <strong>Городской телефон:</strong> {{ value[9] }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="">
+                            <strong>Внутренний номер:</strong> {{ value[10] }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="">
+                            <strong>Примечание:</strong> {{ value[5] }}
+                        </div>
+                    </div>
+                </div>
                 <hr class="um_service_hr">
-                <strong>Примечание:</strong> {{ value[5] }}
-                <hr class="um_service_hr">
-                <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
-                <hr class="um_service_hr">
+                <div class="row">
+                    <div class="col">
+                        <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
+                    </div>
+                </div>
             </small>
             <hr class="um_service_hr">
             </span> 
@@ -36,7 +64,6 @@
             <label class="card_local gap-3  list_items mb-3 free_job" hx-post="/data/find_edit_free_job_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
                 <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
                 <span>
-                    <!-- <hr class="um_service_hr"> -->
                 <h6>{{ value[4] }}</h6>
                 <small class="d-block text-muted">
                     <strong>Должность:</strong> {{ value[3] }}
@@ -54,7 +81,6 @@
             </div>
 
         <div class="list-group"  id="">
-            
             {% for value in extract_user_data_search %}
             {% if loop.index % 2 == 1 %}
             <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
@@ -62,13 +88,41 @@
             <span>
                 <h6>{{ value[4] }}</h6>
                 <small class="d-block text-muted">
-                <hr class="um_service_hr">
-                <strong>Должность:</strong> {{ value[3] }}
-                <hr class="um_service_hr">
-                <strong>Примечание:</strong> {{ value[5] }}
-                <hr class="um_service_hr">
-                <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
-                <hr class="um_service_hr">
+                    <strong>Должность:</strong> {{ value[3] }}
+                    <div class="row">
+                        <div class="col">
+                            <div class="">
+                                <strong>Почта:</strong> {{ value[8] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="">
+                                <strong>Городской телефон:</strong> {{ value[9] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="">
+                                <strong>Внутренний номер:</strong> {{ value[10] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="">
+                                <strong>Примечание:</strong> {{ value[5] }}
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="um_service_hr">
+                    <div class="row">
+                        <div class="col">
+                            <strong>Текущий статус сотрудника:</strong> {{ value[7] }}
+                        </div>
+                    </div>
                 </small>
                 <hr class="um_service_hr">
             </span> 

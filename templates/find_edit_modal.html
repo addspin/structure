@@ -54,23 +54,66 @@
 								{% endfor %}
 								</select>
 							</div>
-
-							<div class="input-group mb-3">
-								<span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-								<select class="form-select" id="inputGroupSelect01" name="user" required>
-								{% for value in extract_user_data_modal %}
-								<option selected>{{ value[4] }}</option>
-								{% endfor %}
-								{% for value in extract_user_name %}
-								<option value="{{value.user_name}}">{{value.user_name}}</option>
-								{% endfor %}
-								{% for value in extract_user_data_modal %}
-								<input type="hidden" name="old_user" value="{{ value[4] }}">
-								{% endfor %}
-								</select>
+							<div class="col">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
+									<select class="form-select" id="inputGroupSelect01" name="user" required>
+									{% for value in extract_user_data_modal %}
+									<option selected>{{ value[4] }}</option>
+									{% endfor %}
+									{% for value in extract_user_name %}
+									<option value="{{value.user_name}}">{{value.user_name}}</option>
+									{% endfor %}
+									{% for value in extract_user_data_modal %}
+									<input type="hidden" name="old_user" value="{{ value[4] }}">
+									{% endfor %}
+									</select>
+								</div>
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="basic-addon1">Почта:</span>
+									<select class="form-select" id="inputGroupSelect01" name="user" required>
+									{% for value in extract_user_data_modal %}
+									<option selected>{{ value[8] }}</option>
+									{% endfor %}
+									{% for value in extract_mail_data %}
+									<option value="{{ value[1] }}">{{ value[1] }}</option>
+									{% endfor %}
+									{% for value in extract_user_data_modal %}
+									<input type="hidden" name="old_mail" value="{{ value[8] }}">
+									{% endfor %}
+									</select>
+								</div>
 							</div>
-
-						</div>
+							<div style="margin-left: 10px;" class="col">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="basic-addon1">Городской номер:</span>
+									<select class="form-select" id="inputGroupSelect01" name="user" required>
+									{% for value in extract_user_data_modal %}
+									<option selected>{{ value[9] }}</option>
+									{% endfor %}
+									{% for value in extract_phone_data %}
+									<option value="{{ value[1] }}">{{ value[1] }}</option>
+									{% endfor %}
+									{% for value in extract_user_data_modal %}
+									<input type="hidden" name="old_phone_long" value="{{ value[9] }}">
+									{% endfor %}
+									</select>
+								</div>
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="basic-addon1">Внутренний номер:</span>
+									<select class="form-select" id="inputGroupSelect01" name="user" required>
+									{% for value in extract_user_data_modal %}
+									<option selected>{{ value[10] }}</option>
+									{% endfor %}
+									{% for value in extract_phone_data %}
+									<option value="{{ value[1] }}">{{ value[1] }}</option>
+									{% endfor %}
+									{% for value in extract_user_data_modal %}
+									<input type="hidden" name="old_phone_short" value="{{ value[1] }}">
+									{% endfor %}
+									</select>
+								</div>
+							</div>
 					</div>
 				
 						<div class="row">

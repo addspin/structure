@@ -130,7 +130,7 @@ def extract_user_data_search_fn(value, data_type):
     if result is None:
         return result
     else:
-        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
+        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
         result = cursor.fetchall()
         return result
 
@@ -291,6 +291,9 @@ def add_card_user_fn(form, photo_name):
     user = request.form['user']
     user_card_text = request.form['user_card_text']
     type_user = request.form['type_user']
+    mail = request.form['mail']
+    phone_long = request.form['phone_long']
+    phone_short = request.form['phone_short']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
    
@@ -307,7 +310,7 @@ def add_card_user_fn(form, photo_name):
         conn.commit()
         return redirect(url_for('card_user'))
 
-    if  management == '' or department == '' or job == '' or user == '':
+    if  management == '' or department == '' or job == '' or user == '' or mail == '' or phone_long == '' or phone_short == '':
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
 
@@ -315,7 +318,7 @@ def add_card_user_fn(form, photo_name):
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name) VALUES (?,?,?,?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short))
         flash (f'{user} ', 'user_card_add-info')
         body = f'''<h5>Новая карточка пользователя:</h5><br> 
                 <strong>Пользователь:</strong>  {user}<br><br> 
@@ -326,7 +329,7 @@ def add_card_user_fn(form, photo_name):
                 <strong>Статус:</strong> {type_user}'''
         send_email.delay(body)
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, mail, phone_long, phone_short, user))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Карточка пользователя обновлена:</h5><br>
                 <strong>Пользователь:</strong>  {user}<br><br> 
@@ -455,7 +458,7 @@ def update_find_user_fn(form, photo_name):
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text, photo_name varchar(300), type_name varchar(300))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text, photo_name varchar(300), type_name varchar(300), mail_name varchar(300), phone_long_name varchar(300), phone_short_name varchar(300))")
     conn.commit()
     conn.close()
 
@@ -594,7 +597,9 @@ def find_edit_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_mail_data = extract_mail_data_fn()
+        extract_phone_data = extract_phone_data_fn()
+        return render_template('find_edit_modal.html', extract_phone_data=extract_phone_data, extract_mail_data=extract_mail_data, old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 @app.route('/data/find_edit_free_job_modal', methods=['GET', 'POST'])
 def find_edit_free_job_modal():
@@ -608,7 +613,9 @@ def find_edit_free_job_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_free_job_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_mail_data = extract_mail_data_fn()
+        extract_phone_data = extract_phone_data_fn()
+        return render_template('find_edit_free_job_modal.html', extract_phone_data=extract_phone_data, extract_mail_data=extract_mail_data, old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 
 def extract_user_data_modal_fn(form):
