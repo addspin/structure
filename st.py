@@ -356,6 +356,9 @@ def update_find_user_fn(form, photo_name):
     type_user = request.form['type_user']
     old_type_user = request.form['old_type_user']
     free_job_id = request.form['free_job_id']
+    # old_mail = request.form['old_mail']
+    # old_phone_long = request.form['old_phone_long']
+    # old_phone_short = request.form['old_phone_short']
     # photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
@@ -858,7 +861,7 @@ def add_data_fn(form):
     if phone_short != '':
         cursor.execute("INSERT OR REPLACE INTO phone (phone_name) VALUES (?)", (phone_short,))
         flash (f'{phone_short} ', 'add-info')
-        body = f'Добавлен новый короткий номер телефона: <strong>{phone_short}</strong>'
+        body = f'Добавлен новый внутренний номер телефона: <strong>{phone_short}</strong>'
         send_email.delay(body)
     conn.commit()
     conn.close()

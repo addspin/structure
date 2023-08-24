@@ -9,7 +9,7 @@
        
         {% for value in extract_user_data_search %}
         {% if loop.index % 2 == 0 %} 
-        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+        <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","old_mail":"{{ value[8] }}","old_phone_long":"{{ value[9] }}","old_phone_short":"{{ value[10] }}","free_job_id":"{{ value[0] }}"'>
             <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}" >
             <span>
             <h6>{{ value[4] }}</h6>
@@ -83,7 +83,7 @@
         <div class="list-group"  id="">
             {% for value in extract_user_data_search %}
             {% if loop.index % 2 == 1 %}
-            <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","free_job_id":"{{ value[0] }}"'>
+            <label class="card_local gap-3  list_items mb-3" hx-post="/data/find_edit_modal" hx-swap="innerHTML" hx-target="#search_modal" hx-trigger="click" hx-vals='"user_edit_name":"{{ value[4] }}","old_type_user":"{{ value[7] }}","old_mail":"{{ value[8] }}","old_phone_long":"{{ value[9] }}","old_phone_short":"{{ value[10] }}","free_job_id":"{{ value[0] }}"'>
             <img class="img_upload_small" src="{{ url_for('static', filename='uploads/photos/' ~ value[6]) }}">
             <span>
                 <h6>{{ value[4] }}</h6>
