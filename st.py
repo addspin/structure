@@ -130,7 +130,7 @@ def extract_user_data_search_fn(value, data_type):
     if result is None:
         return result
     else:
-        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
+        cursor.execute(f"SELECT id, management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name FROM card_user WHERE {data_type}_name = ? AND user_name != '' ", (value,))
         result = cursor.fetchall()
         return result
 
@@ -141,6 +141,8 @@ def card_user():
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
     extract_type_user = extract_type_user_fn()
+    extract_phone_data = extract_phone_data_fn()
+    extract_mail_data = extract_mail_data_fn()
     
     if request.method == 'POST' and 'photo' in request.files:
         form = request.form
@@ -151,15 +153,31 @@ def card_user():
             os.remove(file_path)
         photos.save(request.files['photo'])
         add_card_user_fn(form, photo_name)
-        return render_template('card_user.html',  side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        return render_template('card_user.html',  side_pos='active', extract_mail_data=extract_mail_data, extract_phone_data=extract_phone_data, extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
     if request.method == 'POST':
         form = request.form
         photo_name = 'no_photo.png'
         add_card_user_fn(form, photo_name)
-        return render_template('card_user.html', side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        return render_template('card_user.html', side_pos='active', extract_mail_data=extract_mail_data, extract_phone_data=extract_phone_data, extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
     
-    return render_template('card_user.html',  side_pos='active', extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    return render_template('card_user.html',  side_pos='active', extract_mail_data=extract_mail_data, extract_phone_data=extract_phone_data, extract_type_user=extract_type_user, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+
+def extract_phone_data_fn():
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM phone")
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
+def extract_mail_data_fn():
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM mail")
+    result = cursor.fetchall()
+    conn.close()
+    return result
 
 @app.route('/card_user/update', methods=['GET', 'POST'])
 def card_user_update():    
@@ -273,6 +291,9 @@ def add_card_user_fn(form, photo_name):
     user = request.form['user']
     user_card_text = request.form['user_card_text']
     type_user = request.form['type_user']
+    mail = request.form['mail']
+    phone_long = request.form['phone_long']
+    phone_short = request.form['phone_short']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
    
@@ -289,7 +310,7 @@ def add_card_user_fn(form, photo_name):
         conn.commit()
         return redirect(url_for('card_user'))
 
-    if  management == '' or department == '' or job == '' or user == '':
+    if  management == '' or department == '' or job == '' or user == '' or mail == '' or phone_long == '' or phone_short == '':
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
 
@@ -297,7 +318,7 @@ def add_card_user_fn(form, photo_name):
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
-        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
+        cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name) VALUES (?,?,?,?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short))
         flash (f'{user} ', 'user_card_add-info')
         body = f'''<h5>Новая карточка пользователя:</h5><br> 
                 <strong>Пользователь:</strong>  {user}<br><br> 
@@ -308,7 +329,7 @@ def add_card_user_fn(form, photo_name):
                 <strong>Статус:</strong> {type_user}'''
         send_email.delay(body)
     else:
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, user))
+        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_card_text = ?, photo_name = ?, type_name = ? mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE user_name = ?", (management, department, job, user_card_text, photo_name, type_user, mail, phone_long, phone_short, user))
         flash (f'{user} ', 'user_card_update-info')
         body = f'''<h5>Карточка пользователя обновлена:</h5><br>
                 <strong>Пользователь:</strong>  {user}<br><br> 
@@ -437,7 +458,7 @@ def update_find_user_fn(form, photo_name):
 def create_table_card_user_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text, photo_name varchar(300), type_name varchar(300))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS card_user (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300), job_name varchar(300), user_name varchar(300), user_card_text text, photo_name varchar(300), type_name varchar(300), mail_name varchar(300), phone_long_name varchar(300), phone_short_name varchar(300))")
     conn.commit()
     conn.close()
 
@@ -448,6 +469,8 @@ def data():
     extract_job_data = extract_job_fn()
     extract_user_name_data = extract_user_name_fn()
     extract_count = extract_count_fn()
+    extract_phone_data = extract_phone_data_fn()
+    extract_mail_data = extract_mail_data_fn()
  
     if request.method == 'POST':
         form = request.form
@@ -457,8 +480,10 @@ def data():
         extract_job_data = extract_job_fn()
         extract_user_name_data = extract_user_name_fn()
         extract_count = extract_count_fn()
-        return render_template('data.html', side_pos='active', extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
-    return render_template('data.html', side_pos='active', extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+        extract_phone_data = extract_phone_data_fn()
+        extract_mail_data = extract_mail_data_fn()
+        return render_template('data.html', side_pos='active', extract_mail_data=extract_mail_data, extract_phone_data=extract_phone_data, extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
+    return render_template('data.html', side_pos='active', extract_mail_data=extract_mail_data, extract_phone_data=extract_phone_data, extract_count=extract_count, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data, extract_user_name_data=extract_user_name_data)
 
 def extract_count_fn():
     conn = sqlite3.connect(path_db)
@@ -572,7 +597,9 @@ def find_edit_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_mail_data = extract_mail_data_fn()
+        extract_phone_data = extract_phone_data_fn()
+        return render_template('find_edit_modal.html', extract_phone_data=extract_phone_data, extract_mail_data=extract_mail_data, old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 @app.route('/data/find_edit_free_job_modal', methods=['GET', 'POST'])
 def find_edit_free_job_modal():
@@ -586,7 +613,9 @@ def find_edit_free_job_modal():
         extract_department_data = extract_department_fn()
         extract_job_data = extract_job_fn()
         extract_type_user = extract_type_user_fn()
-        return render_template('find_edit_free_job_modal.html', old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
+        extract_mail_data = extract_mail_data_fn()
+        extract_phone_data = extract_phone_data_fn()
+        return render_template('find_edit_free_job_modal.html', extract_phone_data=extract_phone_data, extract_mail_data=extract_mail_data, old_type_user=old_type_user, free_job_id=free_job_id, extract_type_user=extract_type_user, extract_user_name=extract_user_name, extract_user_data_modal=extract_user_data_modal, extract_management_data=extract_management_data, extract_department_data=extract_department_data, extract_job_data=extract_job_data)
 
 
 def extract_user_data_modal_fn(form):
@@ -776,7 +805,8 @@ def create_table_data_fn():
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS job (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, user_name varchar(300) UNIQUE)")
-    # cursor.execute("CREATE TABLE IF NOT EXISTS job_no_user (id INTEGER PRIMARY KEY, job_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS phone (id INTEGER PRIMARY KEY, phone_name varchar(300) UNIQUE)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS mail (id INTEGER PRIMARY KEY, mail_name varchar(300) UNIQUE)")
     conn.commit()
     conn.close()
 
@@ -785,6 +815,9 @@ def add_data_fn(form):
     department = request.form['department']
     job = request.form['job']
     user = request.form['user']
+    mail = request.form['mail']
+    phone_long = request.form['phone_long']
+    phone_short = request.form['phone_short']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management and department != '':
@@ -804,13 +837,28 @@ def add_data_fn(form):
             send_email.delay(body)
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
-        flash (f'{job} ', 'job-info')
+        flash (f'{job} ', 'add-info')
         body = f'Добавлена новая должность: <strong>{job}</strong>'
         send_email.delay(body)
     if user != '':
         cursor.execute("INSERT OR REPLACE INTO user (user_name) VALUES (?)", (user,))
-        flash (f'{user} ', 'user-info')
+        flash (f'{user} ', 'add-info')
         body = f'Добавлен новый пользователь: <strong>{user}</strong>'
+        send_email.delay(body)
+    if mail != '':
+        cursor.execute("INSERT OR REPLACE INTO mail (mail_name) VALUES (?)", (mail,))
+        flash (f'{mail} ', 'add-info')
+        body = f'Добавлен новый почтовый адрес: <strong>{mail}</strong>'
+        send_email.delay(body)
+    if phone_long != '':
+        cursor.execute("INSERT OR REPLACE INTO phone (phone_name) VALUES (?)", (phone_long,))
+        flash (f'{phone_long} ', 'add-info')
+        body = f'Добавлен новый городской номер телефона: <strong>{phone_long}</strong>'
+        send_email.delay(body)
+    if phone_short != '':
+        cursor.execute("INSERT OR REPLACE INTO phone (phone_name) VALUES (?)", (phone_short,))
+        flash (f'{phone_short} ', 'add-info')
+        body = f'Добавлен новый короткий номер телефона: <strong>{phone_short}</strong>'
         send_email.delay(body)
     conn.commit()
     conn.close()
@@ -864,7 +912,7 @@ def export():
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
 
     # Замена имен колонок
-    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отделы:', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:'})
+    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отделы:', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:', 'mail_name': 'Почта:', 'phone_long_name': 'Городской номер:', 'phone_short_name': 'Внутренний номер:'})
     
     # Исключение колонок
     columns_to_exclude = ['id', 'photo_name']

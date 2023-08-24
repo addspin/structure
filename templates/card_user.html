@@ -37,15 +37,49 @@
             {% endfor %}
             </select>
         </div>
-        <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
-            <select class="form-select" id="user" name="user" >
-            <option selected></option>
-            {% for value in extract_user_name_data %}
-            <option value="{{value.user_name}}">{{value.user_name}}</option>
-            {% endfor %}
-            </select>
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Ф.И.О:</span>
+                    <select class="form-select" id="user" name="user" >
+                    <option selected></option>
+                    {% for value in extract_user_name_data %}
+                    <option value="{{value.user_name}}">{{value.user_name}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Почта:</span>
+                    <select class="form-select" id="mail" name="mail" >
+                    <option selected></option>
+                    {% for value in extract_mail_data %}
+                    <option value="{{value[1]}}">{{value[1]}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Городской телефон:</span>
+                    <select class="form-select" id="phone_long" name="phone_long" >
+                    <option selected></option>
+                    {% for value in extract_phone_data %}
+                    <option value="{{value[1]}}">{{value[1]}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Короткий номер:</span>
+                    <select class="form-select" id="phone_short" name="phone_short" >
+                    <option selected></option>
+                    {% for value in extract_phone_data %}
+                    <option value="{{value[1]}}">{{value[1]}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
         </div>
+        
         <div class="row">
             <div class="col-sm-5 col-md-6">
                 <label for="file_upload" class="form-label">Примечение:</label>
