@@ -279,6 +279,13 @@ def add_card_user_fn(form, photo_name):
     if management != '' and department != '' and job != '' and type_user == 'Свободная ставка':
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name) VALUES (?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user))
         flash (f'Свободная ставка - {job} ', 'user_card_add-info')
+        body = f'''<h5>Новая карточка пользователя:</h5><br> 
+                <strong>Управление:</strong> {management}<br><br> 
+                <strong>Отдел:</strong> {department}<br><br> 
+                <strong>Должность:</strong> {job}<br><br>
+                <strong>Примечание:</strong> {user_card_text}<br><br>
+                <strong>Статус:</strong> {type_user}'''
+        send_email.delay(body)
         conn.commit()
         return redirect(url_for('card_user'))
 
