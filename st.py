@@ -405,7 +405,7 @@ def update_find_user_fn(form, photo_name):
             flash (f'{user} ', 'user_card_user_name_exist-info')
         else:
             # Обновить карточку
-            if type_user != 'Свободная ставка':
+            if type_user != 'Свободная ставка' and old_type_user != "Свободная ставка":
                 cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, free_job_id))
                 flash (f'{old_user} ', 'user_card_update-info')
                 body = f'''<h5>Старая карточка пользователя:</h5><br>
@@ -763,7 +763,7 @@ def delete_data_fn(value,type_data):
 def create_table_data_fn():
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    type = [('Отпуск по беременности и родам',), ('Больничный',), ('Работает',)]
+    type = [('Отпуск по беременности и родам',), ('Больничный',), ('Работает',), ('Свободная ставка',)]
     cursor.execute("CREATE TABLE IF NOT EXISTS type_user (id INTEGER PRIMARY KEY, type_name varchar(300) UNIQUE)")
     cursor.executemany('INSERT OR IGNORE INTO type_user (type_name) VALUES (?)', type)
     cursor.execute("CREATE TABLE IF NOT EXISTS mgm_dep (id INTEGER PRIMARY KEY, management_name varchar(300), department_name varchar(300) UNIQUE)")
