@@ -912,7 +912,7 @@ def export():
     export_data = pd.read_sql('SELECT * FROM card_user' ,conn)
 
     # Замена имен колонок
-    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отделы:', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:'})
+    export_data = export_data.rename(columns={'management_name': 'Управления:', 'department_name': 'Отделы:', 'job_name': 'Должность:', 'user_name': 'ФИО:', 'user_card_text': 'Примечания:', 'type_name': 'Статус:', 'mail_name': 'Почта:', 'phone_long_name': 'Городской номер:', 'phone_short_name': 'Внутренний номер:'})
     
     # Исключение колонок
     columns_to_exclude = ['id', 'photo_name']
