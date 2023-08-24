@@ -31,7 +31,7 @@
         </div>
         <div class="input-group mb-3"></div>
         <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">Должность:</span>
+            <span class="input-group-text" id="basic-addon2">Должность:</span>
             <input class="form-control" list="datalistOptions2" id="job" name="job" placeholder="Название должности" >
             <datalist id="datalistOptions2">
                 {% for value in extract_job_data %}
@@ -39,14 +39,47 @@
                 {% endfor %}
             </datalist>
         </div>
-        <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">Пользователь:</span>
-            <input class="form-control" list="datalistOptions/" id="user" name="user" placeholder="Ф.И.О" >
-            <datalist id="datalistOptions/">
-                {% for value in extract_user_name_data %}
-                <option value="{{value.user_name}}">
-                {% endfor %}
-            </datalist>
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon3">Пользователь:</span>
+                    <input class="form-control" list="datalistOptions3" id="user" name="user" placeholder="Ф.И.О" >
+                    <datalist id="datalistOptions3">
+                        {% for value in extract_user_name_data %}
+                        <option value="{{value.user_name}}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon4">Почта:</span>
+                    <input class="form-control" list="datalistOptions4" id="mail" name="mail" placeholder="Например: tdv@udmurt.ru" >
+                    <datalist id="datalistOptions4">
+                        {% for value in extract_mail_data %}
+                        <option value="{{value[1]}}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon5">Городской телефон:</span>
+                    <input class="form-control" list="datalistOptions5" id="phone_long" name="phone_long" placeholder="Например: 497-107" >
+                    <datalist id="datalistOptions5">
+                        {% for value in extract_phone_data %}
+                        <option value="{{value[1]}}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon6">Короткий номер:</span>
+                    <input class="form-control" list="datalistOptions6" id="phone_short" name="phone_short" placeholder="Например: 1107" >
+                    <datalist id="datalistOptions6">
+                        {% for value in extract_phone_data %}
+                        <option value="{{value[1]}}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+            </div>
         </div>
         <div class="button_line mb-3">
             <div class="" >
@@ -64,12 +97,7 @@
                 <div class="alert {{alert_class}} fade show" role="alert">
                     <strong>{{ message }}</strong> - запись добавлена!
                 </div>
-            {% elif category == 'job-info' %}
-                {% set alert_class = 'alert-success' %}
-                <div class="alert {{alert_class}} fade show" role="alert">
-                    <strong>{{ message }}</strong> - запись добавлена!
-                </div>
-            {% elif category == 'user-info' %}
+            {% elif category == 'add-info' %}
                 {% set alert_class = 'alert-success' %}
                 <div class="alert {{alert_class}} fade show" role="alert">
                     <strong>{{ message }}</strong> - запись добавлена!
@@ -277,17 +305,21 @@ function submit_data() {
     var selectElement_department = document.getElementById("department");
     var selectElement_job = document.getElementById("job");
     var selectElement_user = document.getElementById("user");
+    var selectElement_mail = document.getElementById("mail");
+    var selectElement_phone_long = document.getElementById("phone_long");
+    var selectElement_phone_short = document.getElementById("phone_short");
 
     var values_form = htmx.values(htmx.find("#data_form"));
-//    отправить форму со всеми значениями только если будет заполнено поле job или user
-    if ( selectElement_job.value == "" && selectElement_user.value == "" && selectElement_department.value == "" && selectElement_management.value == "") {
+//    Запретить отправку
+    if ( selectElement_job.value == "" && selectElement_user.value == "" && selectElement_department.value == "" && selectElement_mail.value == "" && selectElement_phone_long.value == "" && selectElement_phone_short.value == "") {
         htmx.ajax("post", "/data/no_data", {target: '#main', swap: 'outerHTML', event: 'click', values: {no_data: ""}});
     }
 //    отправить форму если заполнены поля department и management
     if ( selectElement_department.value !== "" && selectElement_management.value !== "" ) {
         htmx.ajax("post", "data", {target: '#main', swap: 'outerHTML', event: 'click', values: values_form});
     }
-    if ( selectElement_job.value !== "" || selectElement_user.value !== "") { 
+//    отправить форму если заполнены поля job, mail, phone_long, phone_short
+    if ( selectElement_job.value !== "" || selectElement_user.value !== "" || selectElement_mail.value == "" || selectElement_phone_long.value == "" || selectElement_phone_short.value == "") { 
         htmx.ajax("post", "data", {target: '#main', swap: 'outerHTML', event: 'click', values: values_form});
     }
 }
