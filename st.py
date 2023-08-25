@@ -596,6 +596,24 @@ def extract_job_data_modal_fn(form):
         conn.close()
         return value
 
+@app.route('/data/mail_edit_modal', methods=['GET', 'POST'])
+def mail_edit_modal():
+    if request.method == 'POST':
+        form = request.form
+        extract_mail_data_modal = extract_mail_data_modal_fn(form)
+        return render_template('mail_edit_modal.html', extract_mail_data_modal=extract_mail_data_modal)
+
+def extract_mail_data_modal_fn(form):
+    mail_edit_id = request.form['mail_edit_id']
+    conn = sqlite3.connect(path_db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT mail_name FROM job WHERE id = ?", (mail_edit_id,))
+    result = cursor.fetchone()
+    if result:
+        value = result[0]
+        conn.close()
+        return value
+
 @app.route('/data/phone_edit_modal', methods=['GET', 'POST'])
 def phone_edit_modal():
     if request.method == 'POST':
@@ -737,6 +755,17 @@ def update():
             value_old = form_data['phone_old']
             update_data_fn(table_name,value_new,type_data_new,value_old)
             return redirect(url_for('data'))
+
+        if 'mail' in form_keys:
+            type_data_new = 'mail'
+            table_name = 'mail'
+            table_name_card_user = 'card_user'
+            value_new = form_data['mail']
+        if 'mail_old' in form_keys:
+            value_old = form_data['mail_old']
+            update_data_fn(table_name,value_new,type_data_new,value_old)
+            card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old) 
+            return redirect(url_for('data'))
         
 
 def update_data_fn(table_name,value_new,type_data_new,value_old):
@@ -780,6 +809,12 @@ def update_data_fn(table_name,value_new,type_data_new,value_old):
                     <strong>Новый:</strong> {value_new}'''
             flash (f'{value_old} изменен на {value_new}', 'data_update-info')
             send_email.delay(body)
+        if type_data_new == 'mail':
+            body = f'''<h5>Изменение адреса почты</h5><br> 
+                    <strong>Старый:</strong> {value_old}<br>
+                    <strong>Новый:</strong> {value_new}'''
+            flash (f'{value_old} изменен на {value_new}', 'data_update-info')
+            send_email.delay(body)
         
 
 def card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old):
@@ -819,6 +854,11 @@ def delete():
             value = form_data['phone_delete_name']
             delete_data_fn(value,type_data)
             return redirect(url_for('data'))
+        if 'mail_delete_name' in form_data:
+            type_data = 'mail'
+            value = form_data['mail_delete_name']
+            delete_data_fn(value,type_data)
+            return redirect(url_for('data'))
    
 def delete_data_fn(value,type_data):
     conn = sqlite3.connect(path_db)
@@ -844,6 +884,13 @@ def delete_data_fn(value,type_data):
         conn.commit()
         body = f'''<h5>Удаление телефона</h5><br>
                 <strong>Телефон:</strong> {value}'''
+        send_email.delay(body)
+    if type_data == 'mail':
+        cursor.execute(f"DELETE FROM mail WHERE mail_name = ?", (value,))
+        flash (f'{value} ', f'{type_data}-remove-info')
+        conn.commit()
+        body = f'''<h5>Удаление почтового адреса</h5><br>
+                <strong>Почтовый адрес:</strong> {value}'''
         send_email.delay(body)
     if type_data == 'management':
         # если в управлении не осталось ни одного пользователя, удаляем управление
