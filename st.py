@@ -947,17 +947,22 @@ def add_data_fn(form):
         cursor.execute(f"SELECT management_name FROM mgm_dep WHERE management_name = ?", (management,))
         result = cursor.fetchone()
         if result is None:
-            cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+            cursor.execute("INSERT INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
             flash (f'{management} и {department}', 'mgm_dep-info')
             body = f'''<h5>Добавление управления и отдела</h5><br>
                     Добавлено управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'''
             send_email.delay(body)
         if result is not None:
-            cursor.execute("INSERT OR REPLACE INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
-            flash (f'{department}', 'mgm_dep-info')
-            body = f'''<h5>Добавление нового отдела в управление</h5><br>
-                    В управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'''
-            send_email.delay(body)
+            cursor.execute("SELECT department_name FROM mgm_dep WHERE department_name = ?", (department,))
+            result = cursor.fetchone()
+            if result is None:
+                cursor.execute("INSERT INTO mgm_dep (management_name, department_name) VALUES (?,?)", (management, department))
+                flash (f'{department}', 'mgm_dep-info')
+                body = f'''<h5>Добавление нового отдела в управление</h5><br>
+                        В управление: <strong>{management}</strong><br>Добавлен отдел: <strong>{department}</strong>'''
+                send_email.delay(body)
+            else:
+                flash (f'{department}', 'management-update-warning')
     if job != '':
         cursor.execute("INSERT OR REPLACE INTO job (job_name) VALUES (?)", (job,))
         flash (f'{job} ', 'add-info')
