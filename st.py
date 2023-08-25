@@ -607,7 +607,7 @@ def extract_mail_data_modal_fn(form):
     mail_edit_id = request.form['mail_edit_id']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT mail_name FROM job WHERE id = ?", (mail_edit_id,))
+    cursor.execute("SELECT mail_name FROM mail WHERE id = ?", (mail_edit_id,))
     result = cursor.fetchone()
     if result:
         value = result[0]
