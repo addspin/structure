@@ -453,7 +453,7 @@ def update_find_user_fn(form, photo_name):
         else:
             # Обновить карточку
             if type_user != 'Свободная ставка' and old_type_user != "Свободная ставка":
-                cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, free_job_id))
+                cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name =? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short, free_job_id))
                 flash (f'{old_user} ', 'user_card_update-info')
                 body = f'''<h5>Старая карточка пользователя:</h5><br>
                         <strong>Пользователь:</strong>  {old_user}<br>
