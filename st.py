@@ -22,7 +22,7 @@ context.verify_mode = ssl.CERT_NONE
 
 
 client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-# client.conf.update(app.config)
+
 
 mail = Mail(app)
 @client.task
@@ -85,10 +85,8 @@ def card():
             extract_free_job = extract_free_job_fn(value,data_type)
             if extract_user_data_search is None:
                 return render_template('card_no_data.html')
-                # extract_free_job = extract_free_job_fn(value,data_type)
             return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
 
-            # return render_template('card.html', extract_count_free=extract_count_free, extract_free_job=extract_free_job, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search)
         if 'department' in form_keys:
             value = form_data['department']
             data_type = 'department'
@@ -234,17 +232,10 @@ def find_update():
             extract_count_free, extract_count_mgm_dep = extract_count_mgm_dep_fn(data_type,value)
             return render_template('update_search_mgm_dep.html', extract_count_free=extract_count_free, extract_count_mgm_dep=extract_count_mgm_dep, extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
 
-        # return redirect(url_for('search'))
-        # else:
-        #     extract_all_user = extract_all_user_fn()
-        #     extract_count = extract_count_fn()
-        #     return render_template('update_search.html', extract_count=extract_count, extract_all_user=extract_all_user)
-
     if request.method == 'POST':
         form = request.form
         photo_name = extract_photo_name_fn(form)
         update_find_user_fn(form, photo_name)
-
 
         form_data = request.form.to_dict()
         form_keys = request.form.keys()
@@ -263,12 +254,6 @@ def find_update():
             extract_user_data_search = extract_user_data_search_fn(value,data_type)
             extract_free_job = extract_free_job_fn(value,data_type)
             return render_template('update_search_mgm_dep.html', extract_user_data_search=extract_user_data_search, extract_free_job=extract_free_job)
-
-        # return redirect(url_for('search'))
-        # else:
-        #     extract_all_user = extract_all_user_fn()
-        #     extract_count = extract_count_fn()
-        #     return render_template('update_search.html', extract_count=extract_count, extract_all_user=extract_all_user)   
 
 def extract_photo_name_fn(form):
     user = request.form['user']
@@ -296,7 +281,7 @@ def add_card_user_fn(form, photo_name):
     phone_short = request.form['phone_short']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
-   
+    #    Добавить свободную ставку
     if management != '' and department != '' and job != '' and type_user == 'Свободная ставка':
         cursor.execute("INSERT INTO card_user (management_name, department_name, job_name, user_name, user_card_text, photo_name, type_name, mail_name, phone_long_name, phone_short_name) VALUES (?,?,?,?,?,?,?,?,?,?)", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short))
         flash (f'Свободная ставка - {job} ', 'user_card_add-info')
@@ -314,7 +299,7 @@ def add_card_user_fn(form, photo_name):
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
 
-
+    #  Добавить новую карточку пользователя
     cursor.execute("SELECT user_name FROM card_user WHERE user_name = ?", (user,))
     result = cursor.fetchone()
     if result is None:
@@ -325,6 +310,9 @@ def add_card_user_fn(form, photo_name):
                 <strong>Управление:</strong> {management}<br><br> 
                 <strong>Отдел:</strong> {department}<br><br> 
                 <strong>Должность:</strong> {job}<br><br>
+                <strong>Почта:</strong> {mail}<br>
+                <strong>Городской номер:</strong> {phone_long}<br>
+                <strong>Внутренний номер:</strong> {phone_short}<br>
                 <strong>Примечание:</strong> {user_card_text}<br><br>
                 <strong>Статус:</strong> {type_user}'''
         send_email.delay(body)
@@ -336,6 +324,9 @@ def add_card_user_fn(form, photo_name):
                 <strong>Управление:</strong> {management}<br><br> 
                 <strong>Отдел:</strong> {department}<br><br> 
                 <strong>Должность:</strong> {job}<br><br>
+                <strong>Почта:</strong> {mail}<br>
+                <strong>Городской номер:</strong> {phone_long}<br>
+                <strong>Внутренний номер:</strong> {phone_short}<br>
                 <strong>Примечание:</strong> {user_card_text}<br><br>
                 <strong>Статус:</strong> {type_user}'''
         send_email.delay(body)
@@ -362,7 +353,6 @@ def update_find_user_fn(form, photo_name):
     old_phone_long = request.form['old_phone_long']
     phone_short = request.form['phone_short']
     old_phone_short = request.form['old_phone_short']
-    # photo_name = request.form['photo']
     conn = sqlite3.connect(path_db)
     cursor = conn.cursor()
     if management == '':
@@ -374,13 +364,10 @@ def update_find_user_fn(form, photo_name):
     if job == '':
         flash (f'{job} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
-    # if user == '':
-    #     flash (f'{user} ', 'user_card_nodata-info')
-    #     return redirect(url_for('card_user'))
+
     
     if old_type_user == '':
         cursor.execute("DELETE FROM card_user WHERE management_name = ? AND department_name = ? AND job_name = ? AND type_name= ? AND id = ?", (old_management, old_department, old_job, old_type_user, free_job_id))
-        # conn.commit()
 
    
     # Добавить новую карточку пользователя
@@ -399,6 +386,9 @@ def update_find_user_fn(form, photo_name):
                 <strong>Управление:</strong> {old_management}<br>
                 <strong>Отдел:</strong> {old_department}<br>
                 <strong>Должность:</strong> {old_job}<br>
+                <strong>Почта:</strong> {old_mail}<br>
+                <strong>Городской номер:</strong> {old_phone_long}<br>
+                <strong>Внутренний номер:</strong> {old_phone_short}<br>
                 <strong>Примечание:</strong> {old_user_card_text}<br>
                 <strong>Статус:</strong> {old_type_user}<br><br>
 
@@ -410,7 +400,7 @@ def update_find_user_fn(form, photo_name):
                 <strong>Примечание:</strong> {user_card_text}<br>
                 <strong>Статус:</strong> {type_user}<br><br><br><br>'''
         send_email.delay(body)
-        # conn.commit()
+
     # Обновить карточку со "Свободной ставкой"
     if type_user == 'Свободная ставка' and user == '':
         cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ? WHERE id = ?", (management, department, job, '', user_card_text, 'no_photo.png', type_user, free_job_id))
@@ -448,6 +438,9 @@ def update_find_user_fn(form, photo_name):
                 <strong>Управление:</strong> {management}<br>
                 <strong>Отдел:</strong> {department}<br>
                 <strong>Должность:</strong> {job}<br>
+                <strong>Почта:</strong> {mail}<br>
+                <strong>Городской номер:</strong> {phone_long}<br>
+                <strong>Внутренний номер:</strong> {phone_short}<br>
                 <strong>Примечание:</strong> {user_card_text}<br>
                 <strong>Статус:</strong> {type_user}<br><br><br><br>'''
         send_email.delay(body)
@@ -467,6 +460,9 @@ def update_find_user_fn(form, photo_name):
                         <strong>Управление:</strong> {old_management}<br>
                         <strong>Отдел:</strong> {old_department}<br>
                         <strong>Должность:</strong> {old_job}<br>
+                        <strong>Почта:</strong> {old_mail}<br>
+                        <strong>Городской номер:</strong> {old_phone_long}<br>
+                        <strong>Внутренний номер:</strong> {old_phone_short}<br>
                         <strong>Примечание:</strong> {old_user_card_text}<br>
                         <strong>Статус:</strong> {old_type_user}<br><br>
 
@@ -475,6 +471,9 @@ def update_find_user_fn(form, photo_name):
                         <strong>Управление:</strong> {management}<br>
                         <strong>Отдел:</strong> {department}<br>
                         <strong>Должность:</strong> {job}<br>
+                        <strong>Почта:</strong> {mail}<br>
+                        <strong>Городской номер:</strong> {phone_long}<br>
+                        <strong>Внутренний номер:</strong> {phone_short}<br>
                         <strong>Примечание:</strong> {user_card_text}<br>
                         <strong>Статус:</strong> {type_user}<br><br><br><br>'''
                 send_email.delay(body)
@@ -613,7 +612,6 @@ def extract_phone_data_modal_fn(form):
     if result:
         value = result[0]
         conn.close()
-        print(value)
         return value
 
 @app.route('/data/user_edit_modal', methods=['GET', 'POST'])
@@ -738,7 +736,6 @@ def update():
         if 'phone_old' in form_keys:
             value_old = form_data['phone_old']
             update_data_fn(table_name,value_new,type_data_new,value_old)
-            # card_user_change_data_fn(value_new,table_name_card_user,type_data_new,value_old)
             return redirect(url_for('data'))
         
 
@@ -776,6 +773,12 @@ def update_data_fn(table_name,value_new,type_data_new,value_old):
                     <strong>Старое:</strong> {value_old}<br>
                     <strong>Новое:</strong> {value_new}'''
             flash (f'{value_old} изменена на {value_new}', 'data_update-info')
+            send_email.delay(body)
+        if type_data_new == 'phone':
+            body = f'''<h5>Изменение номера телефона</h5><br> 
+                    <strong>Старый:</strong> {value_old}<br>
+                    <strong>Новый:</strong> {value_new}'''
+            flash (f'{value_old} изменен на {value_new}', 'data_update-info')
             send_email.delay(body)
         
 

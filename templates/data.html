@@ -358,24 +358,6 @@ function submit_data() {
 }
 </script>
 
-
-<!-- Показываем модельное окно -->
-<!-- <script>
-function closeModal() {
-	var container = document.getElementById("management_table")
-	var backdrop = document.getElementById("modal-backdrop")
-	var modal = document.getElementById("modal")
-
-	modal.classList.remove("show")
-	backdrop.classList.remove("show")
-
-	setTimeout(function() {
-		container.removeChild(backdrop)
-		container.removeChild(modal)
-	}, 200)
-}
-</script> -->
-
 <script src="{{ url_for('static', filename='/local_js/search_data.js') }}"></script>
 
 {%endblock%}
