@@ -1,0 +1,7 @@
+
+{% for value in mgm_list_data %}
+<option selected>{{value.management_name}}</option>
+{% endfor %}
+{% for value in extract_management_data %}
+<option value="{{value.management_name}}">{{value.management_name}}</option>
+{% endfor %}

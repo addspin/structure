@@ -61,7 +61,26 @@ def dep_list():
         form = request.form
         dep_list_data = dep_list_fn(form)
         return render_template('dep_list.html', dep_list_data=dep_list_data)
+
+@app.route ('/search/mgm_list', methods=['GET', 'POST'])
+def mgm_list():
+    if request.method == 'POST':
+        form = request.form
+        mgm_list_data = mgm_list_fn(form)
+        extract_management_data = extract_management_fn()
+        return render_template('mgm_list.html', extract_management_data=extract_management_data, mgm_list_data=mgm_list_data)
     
+def mgm_list_fn(form):
+    dep_value = request.form['department']
+    conn = sqlite3.connect(path_db)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT management_name FROM mgm_dep WHERE department_name = ?", (dep_value,))
+    result = cursor.fetchall()
+    print(result)
+    conn.close()
+    return result
+
 def dep_list_fn(form):
     mgm_value = request.form['management']
     conn = sqlite3.connect(path_db)

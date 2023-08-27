@@ -12,7 +12,8 @@
     <form hx-post="/card_user" hx-target="#main" hx-swap="innerHTML" id="card_user_form" class="" enctype="multipart/form-data">
         <div  class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Управление:</span>
-            <select class="form-select" id="management" name="management" hx-vals="value">
+            <!-- <select class="form-select" id="management" name="management" hx-vals="value"> -->
+            <select hx-post="/search/dep_list" hx-target="#department" class="form-select " id="management" name="management" required>
             <option selected></option>
             {% for value in extract_management_data %}
             <option value="{{value.management_name}}">{{value.management_name}}</option>
@@ -21,7 +22,8 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Отдел:</span>
-            <select class="form-select" id="department" name="department" required>
+            <!-- <select class="form-select" id="department" name="department" required> -->
+            <select hx-post="/search/mgm_list" hx-target="#management" class="form-select " id="department" name="department" required>
             <option selected></option>
             {% for value in extract_department_data %}
             <option value="{{value.department_name}}">{{value.department_name}}</option>
