@@ -13,7 +13,8 @@
 						{% endfor %}
 						<div class="input-group md-3 col">
 							<span class="input-group-text" id="basic-addon1">Управление:</span>
-							<select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value">
+							<!-- <select class="form-select" id="inputGroupSelect01" name="management" hx-vals="value"> -->
+							<select hx-post="/search/dep_list" hx-target="#department_modal" class="form-select " id="management_modal" name="management" required>	
 							{% for value in extract_user_data_modal %}
 							<option selected>{{ value[1] }}</option>
 							{% endfor %}
@@ -27,7 +28,8 @@
 
 							<div style="margin-top: 15px;" class="input-group ">
 								<span class="input-group-text" id="basic-addon1">Отдел:</span>
-								<select class="form-select" id="inputGroupSelect02" name="department" required>
+								<!-- <select class="form-select" id="inputGroupSelect02" name="department" required> -->
+								<select hx-post="/search/mgm_list" hx-target="#management_modal" class="form-select " id="department_modal" name="department" required>
 								{% for value in extract_user_data_modal %}
 								<option selected>{{ value[2] }}</option>
 								{% endfor %}

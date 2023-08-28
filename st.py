@@ -313,8 +313,8 @@ def add_card_user_fn(form, photo_name):
         send_email.delay(body)
         conn.commit()
         return redirect(url_for('card_user'))
-
-    if  management == '' or department == '' or job == '' or user == '' or mail == '' or phone_long == '' or phone_short == '':
+    # Проверка отправки пустой формы
+    if  management == '' or department == '' or job == '' or user == '':
         flash (f'{management} ', 'user_card_nodata-info')
         return redirect(url_for('card_user'))
 
@@ -440,29 +440,7 @@ def update_find_user_fn(form, photo_name):
                 <strong>Примечание:</strong> {user_card_text}<br>
                 <strong>Статус:</strong> {type_user}<br><br><br><br>'''
         send_email.delay(body)
-    # Перевести свободную ставку в карточку пользователя
-    if type_user != 'Свободная ставка' and old_type_user == "Свободная ставка":
-        cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short, free_job_id))
-        flash (f'{old_user} ', 'user_card_update-info')
-        body = f'''<h5>Старая карточка пользователя:</h5><br>
-                <strong>Пользователь:</strong>  {old_user}<br>
-                <strong>Управление:</strong> {old_management}<br>
-                <strong>Отдел:</strong> {old_department}<br>
-                <strong>Должность:</strong> {old_job}<br>
-                <strong>Примечание:</strong> {old_user_card_text}<br>
-                <strong>Статус:</strong> {old_type_user}<br><br>
 
-                <h5>Новая карточка пользователя:</h5><br>
-                <strong>Пользователь:</strong>  {user}<br>
-                <strong>Управление:</strong> {management}<br>
-                <strong>Отдел:</strong> {department}<br>
-                <strong>Должность:</strong> {job}<br>
-                <strong>Почта:</strong> {mail}<br>
-                <strong>Городской номер:</strong> {phone_long}<br>
-                <strong>Внутренний номер:</strong> {phone_short}<br>
-                <strong>Примечание:</strong> {user_card_text}<br>
-                <strong>Статус:</strong> {type_user}<br><br><br><br>'''
-        send_email.delay(body)
 
     else:
         cursor.execute("SELECT user_name FROM card_user WHERE user_name = ? AND id != ?", (user, free_job_id))
@@ -470,6 +448,29 @@ def update_find_user_fn(form, photo_name):
         if result is not None:
             flash (f'{user} ', 'user_card_user_name_exist-info')
         else:
+            # Перевести свободную ставку в карточку пользователя
+            if type_user != 'Свободная ставка' and old_type_user == "Свободная ставка":
+                cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name = ? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short, free_job_id))
+                flash (f'{old_user} ', 'user_card_update-info')
+                body = f'''<h5>Старая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {old_user}<br>
+                        <strong>Управление:</strong> {old_management}<br>
+                        <strong>Отдел:</strong> {old_department}<br>
+                        <strong>Должность:</strong> {old_job}<br>
+                        <strong>Примечание:</strong> {old_user_card_text}<br>
+                        <strong>Статус:</strong> {old_type_user}<br><br>
+
+                        <h5>Новая карточка пользователя:</h5><br>
+                        <strong>Пользователь:</strong>  {user}<br>
+                        <strong>Управление:</strong> {management}<br>
+                        <strong>Отдел:</strong> {department}<br>
+                        <strong>Должность:</strong> {job}<br>
+                        <strong>Почта:</strong> {mail}<br>
+                        <strong>Городской номер:</strong> {phone_long}<br>
+                        <strong>Внутренний номер:</strong> {phone_short}<br>
+                        <strong>Примечание:</strong> {user_card_text}<br>
+                        <strong>Статус:</strong> {type_user}<br><br><br><br>'''
+                send_email.delay(body)
             # Обновить карточку
             if type_user != 'Свободная ставка' and old_type_user != "Свободная ставка":
                 cursor.execute("UPDATE card_user SET management_name = ?, department_name = ?, job_name = ?, user_name = ?, user_card_text = ?, photo_name = ?, type_name = ?, mail_name = ?, phone_long_name = ?, phone_short_name =? WHERE id = ?", (management, department, job, user, user_card_text, photo_name, type_user, mail, phone_long, phone_short, free_job_id))
